@@ -35,6 +35,7 @@ class Application : public SGCore
     void Update(float dt)
     {
         float greenValue = (sin(SGTimer::instance().GetTotalTime()) / 2.0f) + 0.5f;
+        float s;
     }
 
     void Render()
