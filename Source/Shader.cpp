@@ -5,18 +5,22 @@
 namespace SGEngine
 {
 template<>
-ShaderVariable<P_Attributes, AttributeType>::ShaderVariable(P_Attributes variable, AttributeType type)
+ShaderVariable<Shader_Semantic, Shader_VariableType>::ShaderVariable(Shader_Semantic variable, Shader_VariableType type)
 {
   _variable = variable;
   _type = type;
 }
 template<>
-ShaderVariable<P_Uniform, UniformType>::ShaderVariable(P_Uniform variable, UniformType type)
+ShaderVariable<Shader_Uniform, Shader_UniformType>::ShaderVariable(Shader_Uniform variable, Shader_UniformType type)
 {
   _variable = variable;
   _type = type;
 }
-
+template <typename variable, typename type>
+void Shader::AddVariable(ShaderVariable<variable,type> _variable,std::string variableName)
+{
+  //std::vector<variable,type>
+}
 
 Shader::Shader(char *shaderName, const char *vs_file, const char *fs_file)
 {

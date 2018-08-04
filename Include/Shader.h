@@ -2,21 +2,32 @@
 #define _SHADER_H
 
 #include "SGUtil.h"
-#include "Property.h"
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 namespace SGEngine
 {
-  enum AttributeType
-  {
-    AT_FLOAT_VEC3 = GL_FLOAT_VEC3,
-    AT_FLOAT_VEC4 = GL_FLOAT_VEC4
-  };
+enum Shader_VariableType
+{
+  AT_FLOAT_VEC3 = GL_FLOAT_VEC3,
+  AT_FLOAT_VEC4 = GL_FLOAT_VEC4
+};
 
-  enum UniformType
-  {
-    UT_FLOAT_MAT4 = GL_FLOAT_MAT4
-  };
+enum Shader_UniformType
+{
+  UT_FLOAT_MAT4 = GL_FLOAT_MAT4
+};
+
+enum Shader_Semantic
+{
+  Position,
+  Color,
+  Texture
+};
+
+enum Shader_Uniform
+{
+  MVP_Matrix
+};
 
 template <typename variable, typename type>
 class ShaderVariable final
@@ -24,17 +35,17 @@ class ShaderVariable final
 public:
   ShaderVariable(variable, type);
 
-      private :
-      //Prevent Copying
-      ShaderVariable<variable, type> &
-      operator=(const ShaderVariable<variable, type> &v);
+private:
+  //Prevent Copying
+  ShaderVariable<variable, type> &
+  operator=(const ShaderVariable<variable, type> &v);
 
   variable _variable;
   type _type;
 };
 
-typedef ShaderVariable<P_Attributes,AttributeType> ShaderAttribute;
-typedef ShaderVariable<P_Uniform,UniformType> ShaderUniform;
+typedef ShaderVariable<Shader_Semantic, Shader_VariableType> ShaderAttribute;
+typedef ShaderVariable<Shader_Uniform, Shader_UniformType> ShaderUniform;
 
 class Shader
 {
@@ -49,7 +60,6 @@ public: //const char* vs_file , const char* fs_file
   void SetFloat4(const char *variable_name, glm::vec4 value);
 
 private:
-
   template <typename variable, typename type>
   struct VariableInfo
   {
@@ -67,9 +77,9 @@ private:
 
   std::string name;
   SG_UINT shaderID;
-  
-  typedef VariableInfo<P_Attributes,AttributeType> AttributeInfo;
-  typedef VariableInfo<P_Uniform,UniformType> UniformInfo;
+
+  typedef VariableInfo<Shader_Semantic, Shader_VariableType> AttributeInfo;
+  typedef VariableInfo<Shader_Uniform, Shader_UniformType> UniformInfo;
 };
 
 #include "ShaderInfo.inl"
