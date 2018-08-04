@@ -22,6 +22,7 @@ class SGCore
     virtual void Update(float dt) = 0;
     virtual void Render() = 0;
     virtual void Start() = 0;
+    virtual void ApplicationDispose() = 0;
     
     GLFWwindow &GetMainWindow()
     {

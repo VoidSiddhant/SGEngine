@@ -97,6 +97,7 @@ namespace SGEngine
 
     int SGCore::EngineDispose()
     {
+        this->ApplicationDispose();
         glfwTerminate();
         return 0;
     }

@@ -4,9 +4,23 @@
 
 namespace SGEngine
 {
-
-Shader::Shader(const char *vs_file, const char *fs_file)
+template<>
+ShaderVariable<P_Attributes, AttributeType>::ShaderVariable(P_Attributes variable, AttributeType type)
 {
+  _variable = variable;
+  _type = type;
+}
+template<>
+ShaderVariable<P_Uniform, UniformType>::ShaderVariable(P_Uniform variable, UniformType type)
+{
+  _variable = variable;
+  _type = type;
+}
+
+
+Shader::Shader(char *shaderName, const char *vs_file, const char *fs_file)
+{
+  name = shaderName;
   //***************VERTEX SHADER**************************//
   //Open File
   std::ifstream file_vs(vs_file, std::ios_base::in);
@@ -27,7 +41,6 @@ Shader::Shader(const char *vs_file, const char *fs_file)
   std::string str2 = fragment_file_stream.str();
   const char *vertex_code = str.c_str();
   const char *fragment_code = str2.c_str();
-
 
   SG_UINT vs_object = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vs_object, 1, &vertex_code, &size);
@@ -68,7 +81,7 @@ Shader::Shader(const char *vs_file, const char *fs_file)
   if (!success)
   {
     glGetProgramInfoLog(shaderID, sizeof(log), NULL, log);
-    std::cout << "Error linking program: " << log<<std::endl;
+    std::cout << "Error linking program: " << log << std::endl;
   }
   //Delete the shader object
   glDeleteShader(vs_object);

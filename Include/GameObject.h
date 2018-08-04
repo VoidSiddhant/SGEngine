@@ -8,6 +8,7 @@ namespace SGEngine
     struct Vertex{
         SGVector3 position;
         SGVector4 color;
+        SGVector2 texCoord;
     };
    typedef struct Mesh
     {
@@ -39,7 +40,7 @@ namespace SGEngine
         private:
         PMesh mesh;
         SG_UINT vao,vbo,ebo;
-
+        
     };
 }
 
