@@ -1,7 +1,5 @@
 #ifndef _SHAPES_H
 #define _SHAPES_H
-
-#include "Vector.h"
 #include "GameObject.h"
 namespace SGEngine
 {

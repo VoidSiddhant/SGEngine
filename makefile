@@ -9,8 +9,8 @@ engine:
 	$(CC) $(CFLAGC) $(INCLUDES) ./Source/Core.cpp -o Core.o
 	$(CC) $(CFLAGC) $(INCLUDES) ./Source/Input.cpp -o Input.o
 	$(CC) $(CFLAGC) $(INCLUDES) ./Source/Timer.cpp -o Timer.o
-	$(CC) $(CFLAGC) $(INCLUDES) ./Source/Shader.cpp -o Shader.o
 	$(CC) $(CFLAGC) $(INCLUDES) ./Source/Vector.cpp -o Vector.o
+	$(CC) $(CFLAGC) $(INCLUDES) ./Source/Shader.cpp -o Shader.o
 	$(CC) $(CFLAGC) $(INCLUDES) ./Source/GameObject.cpp -o GameObject.o
 	$(CC) $(CFLAGC) $(INCLUDES) ./Source/PrimitiveShapes.cpp -o PrimitiveShapes.o
 	#$(CC) $(CFLAGC) $(INCLUDES) ./Source/External/stb_image.cpp -o stb_image.o
@@ -25,4 +25,4 @@ clean:
 	rm -f ./*.so ./*.o ./$(OUTPUT)
 run:
 	./$(OUTPUT)
-all: engine application link
+all: clean engine application link

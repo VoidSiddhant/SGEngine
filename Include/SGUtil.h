@@ -21,5 +21,6 @@
 #define SG_UTIL_MATH_TORAD 3.14159265f / 180.0f
 
 #define SG_UINT unsigned int
+#define SG_INLINE inline
 
 #endif

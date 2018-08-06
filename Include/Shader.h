@@ -8,8 +8,9 @@ namespace SGEngine
 {
 enum Shader_VariableType
 {
-  AT_FLOAT_VEC3 = GL_FLOAT_VEC3,
-  AT_FLOAT_VEC4 = GL_FLOAT_VEC4
+  VT_FLOAT_VEC2 = GL_FLOAT_VEC2,
+  VT_FLOAT_VEC3 = GL_FLOAT_VEC3,
+  VT_FLOAT_VEC4 = GL_FLOAT_VEC4
 };
 
 enum Shader_UniformType
@@ -19,9 +20,9 @@ enum Shader_UniformType
 
 enum Shader_Semantic
 {
-  Position,
-  Color,
-  Texture
+  Semantic_Position,
+  Semantic_Color,
+  Semantic_Texture
 };
 
 enum Shader_Uniform
@@ -30,11 +31,11 @@ enum Shader_Uniform
 };
 
 template <typename variable, typename type>
-class ShaderVariable final
+class ShaderVariable
 {
 public:
   ShaderVariable(variable, type);
-
+  SG_INLINE bool operator==(const ShaderVariable<variable,type>& inValue);
 private:
   //Prevent Copying
   ShaderVariable<variable, type> &
@@ -49,13 +50,13 @@ typedef ShaderVariable<Shader_Uniform, Shader_UniformType> ShaderUniform;
 
 class Shader
 {
-public: //const char* vs_file , const char* fs_file
-  Shader(char *shaderName, const char *vs_file, const char *fs_file);
+public:
+  Shader(const char *shaderName, const char *vs_file, const char *fs_file);
   ~Shader();
 
   void Use();
   template <typename variable, typename type>
-  void AddVariable(ShaderVariable<variable, type> _variable, std::string variableName);
+  void AddVariable(const ShaderVariable<variable, type>& _variable, std::string variableName);
   void SetFloat3(const char *variable_name, glm::vec3 value);
   void SetFloat4(const char *variable_name, glm::vec4 value);
 
@@ -78,8 +79,19 @@ private:
   std::string name;
   SG_UINT shaderID;
 
-  typedef VariableInfo<Shader_Semantic, Shader_VariableType> AttributeInfo;
-  typedef VariableInfo<Shader_Uniform, Shader_UniformType> UniformInfo;
+  typedef VariableInfo<Shader_Semantic, Shader_VariableType> ShaderAttributeInfo;
+  typedef VariableInfo<Shader_Uniform, Shader_UniformType> ShaderUniformInfo;
+
+  std::vector<ShaderAttributeInfo> vector_sai;
+  std::vector<ShaderUniformInfo> vector_sui;
+
+  std::vector<ShaderAttributeInfo>& getVector(const ShaderAttribute& attribute){
+    return vector_sai;
+  }
+
+  std::vector<ShaderUniformInfo>& getVector (const ShaderUniform& uniform){
+    return vector_sui;
+  }
 };
 
 #include "ShaderInfo.inl"

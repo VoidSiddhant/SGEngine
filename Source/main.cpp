@@ -28,9 +28,9 @@ class Application : public SGCore
         SGShapes::instance().Quad2D(SGVector4(0.0f, 1.0f, 0.0f, 1.0f), s);
         square = new GameObject(SGVector3(0.0f, 0.0f, 0.0f), SGVector3(0.0f, 0.0f, 0.0f), s);
 
-        simple = new Shader("Simple","./Shader/vertex.vs", "./Shader/color.frag");
-        simple->AddVariable(ShaderAttribute(Position,AT_FLOAT_VEC3), "lPos");
-        simple->AddVariable(ShaderAttribute(Color,AT_FLOAT_VEC4), "color");
+        simple = new Shader("Simple", "./Shader/vertex.vs", "./Shader/color.frag");
+        //simple->AddVariable(ShaderAttribute(Semantic_Position, VT_FLOAT_VEC3), "lPos");
+        //simple->AddVariable(ShaderAttribute(Semantic_Color, VT_FLOAT_VEC4), "color");
         simple->Use();
     }
 
@@ -52,7 +52,7 @@ class Application : public SGCore
 
     void ApplicationDispose()
     {
-        delete triangle,square,simple;
+        delete triangle, square, simple;
     }
 
     ~Application()
@@ -63,7 +63,7 @@ class Application : public SGCore
     SG_UINT vbo, vao, ebo;
     Shader *simple;
     GameObject *triangle, *square;
-    //Noobness
+
     Application()
     {
     }

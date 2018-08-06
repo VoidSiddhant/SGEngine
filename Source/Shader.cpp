@@ -4,25 +4,21 @@
 
 namespace SGEngine
 {
-template<>
+
+template <>
 ShaderVariable<Shader_Semantic, Shader_VariableType>::ShaderVariable(Shader_Semantic variable, Shader_VariableType type)
 {
   _variable = variable;
   _type = type;
 }
-template<>
+template <>
 ShaderVariable<Shader_Uniform, Shader_UniformType>::ShaderVariable(Shader_Uniform variable, Shader_UniformType type)
 {
   _variable = variable;
   _type = type;
-}
-template <typename variable, typename type>
-void Shader::AddVariable(ShaderVariable<variable,type> _variable,std::string variableName)
-{
-  //std::vector<variable,type>
-}
+} 
 
-Shader::Shader(char *shaderName, const char *vs_file, const char *fs_file)
+Shader::Shader(const char *shaderName, const char *vs_file, const char *fs_file)
 {
   name = shaderName;
   //***************VERTEX SHADER**************************//

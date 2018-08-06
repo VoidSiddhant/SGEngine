@@ -5,6 +5,9 @@ namespace SGEngine
 {
 GameObject::GameObject()
 {
+    SGVector2 v,v2,v3;
+    v3 = v+v2;
+    std::cout<<v3;
     vao = vbo = ebo = 0;
     mesh = nullptr;
 }
