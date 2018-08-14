@@ -19,7 +19,7 @@ void Shader::AddVariable(const ShaderVariable<t_variable, t_type>& _variable, st
         {
             if (info._shaderVariable == _variable)
             {
-                std::cout << "Error Variable Already Exist in shader program : "<<shaderID<<std::endl;
+                std::cout << "Error Variable Already Exist in shader program : "<<shaderProgramName<<std::endl;
             }
         }
     //Store the variable
