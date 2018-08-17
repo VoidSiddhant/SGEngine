@@ -9,13 +9,13 @@ SGShaderManager &SGShaderManager::instance()
     return *_instance;
 }
 
-SGShaderManager::AttributeVariable::AttributeVariable(Shader_VariableType etype,SG_UINT uLocation)
+SGShaderManager::AttributeVariable::AttributeVariable(Shader_VariableType etype, SG_UINT uLocation)
 {
     this->_uLocation = uLocation;
     this->_eType = etype;
 }
 
-SGShaderManager::UniformVariable::UniformVariable(Shader_UniformType etype , SG_UINT uLocation)
+SGShaderManager::UniformVariable::UniformVariable(Shader_UniformType etype, SG_UINT uLocation)
 {
     this->_uLocation = uLocation;
     this->_eType = etype;
@@ -90,7 +90,7 @@ SG_UINT SGShaderManager::InitializeShader(const ShaderType &shaderType, const st
     return (vector_loadedShader.size() - 1);
 }
 
-void SGShaderManager::ProcessAttributes(const uint programID, std::string shaderName, Shader::Vector_ShaderAttributeInfo& vSai, MapAttributes &mAttributes)
+void SGShaderManager::ProcessAttributes(const uint programID, std::string shaderName, Shader::Vector_ShaderAttributeInfo &vSai, MapAttributes &mAttributes)
 {
     // PARSING SHADER FILE
     bool bError = false;
@@ -269,5 +269,114 @@ void SGShaderManager::Create(Shader &shader)
     ProcessUniforms(programBlob->_uId, shader.shaderProgramName, shader.vector_sui, programBlob->_mapUniform);
 
     _map_ProgramBlob.insert(MAP_ProgramBlob::value_type(shader.shaderProgramName, programBlob));
+}
+
+SGShaderManager::~SGShaderManager()
+{
+    //disable all shader programs
+    activeShaderProgramName = "";
+    if (glUseProgram)
+        glUseProgram(0);
+
+    //Free in memory Program Blobs
+    try
+    {
+        for (auto it = _map_ProgramBlob.begin(); it != _map_ProgramBlob.end(); it++)
+        {
+            for (SG_UINT uShaderType = 0; uShaderType < it->second->_aShaderIndex.size(); uShaderType++)
+            {
+                glDetachShader(it->second->_uId, _avShaderBlob[uShaderType].at(
+                                                                               it->second->_aShaderIndex[uShaderType])
+                                                     ->uId);
+            }
+
+            glDeleteProgram(it->second->_uId);
+            delete it->second.get();
+        }
+    }
+    catch (...)
+    {
+        std::cout << "Exception occured , failed to Detach Program<-/->Shader";
+    }
+
+    try
+    {
+        for (SG_UINT uShaderType = 0; uShaderType < _avShaderBlob.size(); uShaderType++)
+        {
+            //Free in Memory Shader Blobs
+            for (SG_UINT i = 0; i < _avShaderBlob[uShaderType].size(); i++)
+            {
+                glDeleteShader(_avShaderBlob[uShaderType].at(i)->uId);
+                delete _avShaderBlob[uShaderType].at(i).get();
+            }
+        }
+    }
+    catch (...)
+    {
+        std::cout << "Exception occurred , failed to glDelete(Shader)\n";
+    }
+}
+
+void SGShaderManager::EnableProgram(std::string shaderProgramName)
+{
+    try
+    {
+        glUseProgram(_map_ProgramBlob[shaderProgramName]->_uId);
+        activeShaderProgramName = shaderProgramName;
+    }
+    catch (...)
+    {
+        std::cout << "Shader Program : " << shaderProgramName << " not found\n";
+    }
+}
+
+void SGShaderManager::EnableAttribute(Shader_Semantic semantic, SG_UINT strideBytes, SG_UINT offsetBytes, bool normalize) const
+{
+    SetVertexAttribute(semantic, reinterpret_cast<const void *const>(0), true, strideBytes, offsetBytes, normalize);
+}
+
+void SGShaderManager::DisableAttribute(Shader_Semantic semantic) const
+{
+    SetVertexAttribute(semantic, reinterpret_cast<const void *const>(0), false, 0, 0, false);
+}
+
+void SGShaderManager::SetVertexAttribute(AttributeVariable attrib, const void *const pVoid, bool bEnable, SG_UINT strideBytes, SG_UINT offsetBytes, bool isNormalized) const
+{
+    if (bEnable)
+    {
+        glVertexAttribPointer(attrib._uLocation, attrib._iSize, GL_FLOAT, isNormalized, strideBytes, reinterpret_cast<const void *>(offsetBytes));
+        glEnableVertexAttribArray(attrib._uLocation);
+    }
+    else
+    {
+        glDisableVertexAttribArray(attrib._uLocation);
+    }
+}
+
+void SGShaderManager::SetUniform(Shader_Uniform eType,const glm::mat4& m4Matrix) const
+{
+    try
+    {
+        SPTR_ProgramBlob shared_program = _map_ProgramBlob.at(activeShaderProgramName);
+        
+        MapUniforms::const_iterator it = shared_program->_mapUniform.find(eType);
+        if(it == shared_program->_mapUniform.end())
+        {
+            std::cout<<"Fail to set , Uniform not found\n";
+        }
+        else if(!(it->second._eType == UT_FLOAT_MAT4))
+        {
+            std::cout<<"Fail to set , uniform type mis match\n";
+        }
+
+        //set the matrix values
+        glUniformMatrix4fv(it->second._uLocation,1,false,&m4Matrix[0][0]);
+    }
+    catch(...)
+    {
+        std::cout<<"Failed to Set Uniform , check for :\n";
+        std::cout<<"Did program create\n";
+        std::cout<<"Check Active program name\n";
+    }
 }
 } // namespace SGEngine

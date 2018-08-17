@@ -7,7 +7,7 @@
 
 namespace SGEngine
 {
-  /* Variables present inside the shader file , GLSL types (vec3,vec4,vec2)*/
+  /* Variable types present inside the shader file , GLSL types (vec3,vec4,vec2)*/
 enum Shader_VariableType
 {
   VT_FLOAT_VEC2 = GL_FLOAT_VEC2,
@@ -19,13 +19,8 @@ enum Shader_UniformType
 {
   UT_FLOAT_MAT4 = GL_FLOAT_MAT4
 };
-/*Purpose of the shader variables*/
-enum Shader_Semantic
-{
-  Semantic_Position,
-  Semantic_Color,
-  Semantic_Texture
-};
+/*Forward declaration by the application*/
+enum class Shader_Semantic : uint;
 
 enum Shader_Uniform
 {
@@ -87,7 +82,7 @@ private:
   typedef VariableInfo<Shader_Semantic, Shader_VariableType> ShaderAttributeInfo;
   typedef VariableInfo<Shader_Uniform, Shader_UniformType> ShaderUniformInfo;
   /* Vector list to store all the shader's variable info , will sent to the 
-      ShaderManager for storage*/
+      ShaderManager for storage and verification*/
   typedef std::vector<ShaderAttributeInfo> Vector_ShaderAttributeInfo;
   using Vector_ShaderUniformInfo = std::vector<ShaderUniformInfo>;
   

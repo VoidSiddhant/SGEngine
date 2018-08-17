@@ -1,14 +1,26 @@
-#include<iostream>
+#include <iostream>
 #include <memory>
 #include <map>
+#include <vector>
 using namespace std;
+
+void s()
+{
+
+    throw 90;
+    cout << "How about we do\n";
+}
 
 int main()
 {
-    int a = 10;
-    int* ap = new int{10};
-    map<std::string,int*> _map;
-    _map.insert(map<std::string,int*>::value_type("Value",ap));
-    cout<<*_map["Value"];
+    try
+    {
+        s();
+    }
+    catch (int e)
+    {
+        std::cout << e;
+    }
+
     return 0;
 }

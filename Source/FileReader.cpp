@@ -16,5 +16,6 @@ namespace SGEngine
 
     SGFileReader::~SGFileReader()
     {
+        fileStream.close();
     }
 } // namespace SGEngine

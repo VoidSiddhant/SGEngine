@@ -1,11 +1,17 @@
 #include "Core.h"
 #include "Input.h"
 #include "Timer.h"
-#include "Shader.h"
+#include "ShaderManager.h"
 #include "Vector.h"
 #include "PrimitiveShapes.h"
 
 using namespace SGEngine;
+// Forward declaration
+enum class Shader_Semantic{
+    SEMANTIC_POSTION,
+    SEMANTIC_COLOR,
+    SEMANTIC_TEXCOORD
+};
 
 class Application : public SGCore
 {
@@ -28,10 +34,11 @@ class Application : public SGCore
         SGShapes::instance().Quad2D(SGVector4(0.0f, 1.0f, 0.0f, 1.0f), s);
         square = new GameObject(SGVector3(0.0f, 0.0f, 0.0f), SGVector3(0.0f, 0.0f, 0.0f), s);
 
-        //simple = new Shader("Simple", "./Shader/vertex.vs", "./Shader/color.frag");
-        //simple->AddVariable(ShaderAttribute(Semantic_Position, VT_FLOAT_VEC3), "lPos");
-        //simple->AddVariable(ShaderAttribute(Semantic_Color, VT_FLOAT_VEC4), "color");
-        //simple->Use();
+        simple = new Shader("Simple", "./Shader/vertex.vs", "./Shader/color.frag");
+        simple->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_POSTION, VT_FLOAT_VEC3), "lPos");
+        simple->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_COLOR, VT_FLOAT_VEC4), "color");
+        
+        SGShaderManager::instance().Create(simple);
     }
 
     void Update(float dt)
