@@ -9,10 +9,11 @@ SGShaderManager &SGShaderManager::instance()
     return *_instance;
 }
 
-SGShaderManager::AttributeVariable::AttributeVariable(Shader_VariableType etype, SG_UINT uLocation)
+SGShaderManager::AttributeVariable::AttributeVariable(Shader_VariableType etype, SG_UINT uLocation, int size)
 {
     this->_uLocation = uLocation;
     this->_eType = etype;
+    this->_iSize = size;
 }
 
 SGShaderManager::UniformVariable::UniformVariable(Shader_UniformType etype, SG_UINT uLocation)
@@ -90,10 +91,11 @@ SG_UINT SGShaderManager::InitializeShader(const ShaderType &shaderType, const st
     return (vector_loadedShader.size() - 1);
 }
 
-void SGShaderManager::ProcessAttributes(const uint programID, std::string shaderName, Shader::Vector_ShaderAttributeInfo &vSai, MapAttributes &mAttributes)
+void SGShaderManager::Process(const uint programID, std::string shaderName, Shader::Vector_ShaderAttributeInfo &vSai, MapAttributes &mAttributes)
 {
+    std::cout<<"Entered Process Attributes";
     // PARSING SHADER FILE
-    bool bError = false;
+    //bool bError = false;
     int iNumVariables = 0;
     glGetProgramiv(programID, GL_ACTIVE_ATTRIBUTES, &iNumVariables);
     if (iNumVariables == 0 && !vSai.empty())
@@ -116,7 +118,7 @@ void SGShaderManager::ProcessAttributes(const uint programID, std::string shader
 
         glGetActiveAttrib(programID, i, iMaxLength, NULL, &iSize, &eType, p_attribute_name.get());
 
-        Shader_VariableType eAttributeType = static_cast<Shader_VariableType>(eType);
+        Shader_VariableType eAttributeType = static_cast<Shader_VariableType>(eType); // type as defined inside the shader file
 
         //Verify
         bool bFound = false;
@@ -125,7 +127,7 @@ void SGShaderManager::ProcessAttributes(const uint programID, std::string shader
             if (it->_strName == p_attribute_name.get())
             {
                 bFound = true;
-
+                
                 if (it->_shaderVariable._type != eAttributeType)
                 {
                     std::cout << "Type Missmatch\n";
@@ -136,7 +138,7 @@ void SGShaderManager::ProcessAttributes(const uint programID, std::string shader
         }
         if (!bFound)
         {
-            bError = true;
+            //bError = true;
             std::cout << p_attribute_name.get() << " is used but not added the the shaderManager\n";
         }
     }
@@ -146,7 +148,7 @@ void SGShaderManager::ProcessAttributes(const uint programID, std::string shader
     {
         if (!info._isVerified)
         {
-            bError = true;
+            //bError = true;
             std::cout << "Not Verified\n";
         }
         else
@@ -154,13 +156,14 @@ void SGShaderManager::ProcessAttributes(const uint programID, std::string shader
             //cache location for this attribute
             SG_UINT uLocation = glGetAttribLocation(programID, info._strName.c_str());
             mAttributes.insert(MapAttributes::value_type(info._shaderVariable._variable,
-                                                         AttributeVariable(info._shaderVariable._type, uLocation)));
+                                                         AttributeVariable(info._shaderVariable._type, uLocation, info._dataSize)));
         }
     }
 }
 
 void SGShaderManager::ProcessUniforms(const uint programID, std::string shaderName, Shader::Vector_ShaderUniformInfo &vSui, MapUniforms &mUniforms)
 {
+    std::cout<<"Entered Process Uniforms";
     // Parse....................................................
 
     int iNumVariables = 0;
@@ -220,25 +223,26 @@ void SGShaderManager::ProcessUniforms(const uint programID, std::string shaderNa
         }
     }
 }
-// namespace SGEngine   } }
 
 void SGShaderManager::Create(Shader &shader)
 {
+    std::cout<<"SGSHADERMANAGER : CREATING SHADER\n";
     SPTR_ProgramBlob programBlob = nullptr;
     // Check if Shader already has been created
     try
     {
-        programBlob = _map_ProgramBlob.at(shader.shaderProgramName);
-        if (programBlob)
+        auto it = _map_ProgramBlob.find(shader.shaderProgramName);
+        if (it != _map_ProgramBlob.end())
         {
             std::cout << "Shader Already Created\n";
-            throw;
-        }
+        }else  
+            std::cout<<"Shader Not Found , Creating Shader\n";
     }
     catch (...)
     {
         std::cout << "Exception Occured Shader Creation Failed\n";
     }
+    std::cout<<"Shader Not Found , Creating Shader\n";
     //Create New Program
     programBlob.reset(new ProgramBlob());
     if (programBlob->_uId == 0)
@@ -248,13 +252,16 @@ void SGShaderManager::Create(Shader &shader)
 
     programBlob->_aShaderIndex[SHADER_VERTEX] = InitializeShader(SHADER_VERTEX, shader._vertex_shader_file);
     programBlob->_aShaderIndex[SHADER_FRAGMENT] = InitializeShader(SHADER_FRAGMENT, shader._fragment_shader_file);
-
+std::cout<<"Attaching Shader\n";
     //combine and link
     glAttachShader(programBlob->_uId, _avShaderBlob[SHADER_VERTEX].at(programBlob->_aShaderIndex[SHADER_VERTEX])->uId);
     glAttachShader(programBlob->_uId, _avShaderBlob[SHADER_FRAGMENT].at(programBlob->_aShaderIndex[SHADER_FRAGMENT])->uId);
-
+std::cout<<"Attached Shader\n";
     glLinkProgram(programBlob->_uId);
-
+std::cout<<"Linked Shader\n";
+    std::cout<<"Process Shader\n";
+    Process(programBlob->_uId, shader.shaderProgramName, shader.vector_sai, programBlob->_mapAttributes);
+ 
     //LOG ERROR
     char log[512];
     int success = 0;
@@ -264,8 +271,7 @@ void SGShaderManager::Create(Shader &shader)
         glGetProgramInfoLog(programBlob->_uId, sizeof(log), NULL, log);
         std::cout << "Error linking program: " << log << std::endl;
     }
-
-    ProcessAttributes(programBlob->_uId, shader.shaderProgramName, shader.vector_sai, programBlob->_mapAttributes);
+   std::cout<<"processsing Uniform\n";
     ProcessUniforms(programBlob->_uId, shader.shaderProgramName, shader.vector_sui, programBlob->_mapUniform);
 
     _map_ProgramBlob.insert(MAP_ProgramBlob::value_type(shader.shaderProgramName, programBlob));
@@ -317,6 +323,20 @@ SGShaderManager::~SGShaderManager()
     }
 }
 
+void SGShaderManager::BindVAO(const Shader &refShader)
+{
+    try
+    {
+        glBindVertexArray(refShader.vao);
+    }
+    catch (...)
+    {
+        std::cout << "Failed to bind vertex array object for shader : " << refShader.shaderProgramName
+                  << std::endl
+                  << "Make Sure the vertex array object exist for the shader\n";
+    }
+}
+
 void SGShaderManager::EnableProgram(std::string shaderProgramName)
 {
     try
@@ -353,30 +373,30 @@ void SGShaderManager::SetVertexAttribute(AttributeVariable attrib, const void *c
     }
 }
 
-void SGShaderManager::SetUniform(Shader_Uniform eType,const glm::mat4& m4Matrix) const
+void SGShaderManager::SetUniform(Shader_Uniform eType, const glm::mat4 &m4Matrix) const
 {
     try
     {
         SPTR_ProgramBlob shared_program = _map_ProgramBlob.at(activeShaderProgramName);
-        
+
         MapUniforms::const_iterator it = shared_program->_mapUniform.find(eType);
-        if(it == shared_program->_mapUniform.end())
+        if (it == shared_program->_mapUniform.end())
         {
-            std::cout<<"Fail to set , Uniform not found\n";
+            std::cout << "Fail to set , Uniform not found\n";
         }
-        else if(!(it->second._eType == UT_FLOAT_MAT4))
+        else if (!(it->second._eType == UT_FLOAT_MAT4))
         {
-            std::cout<<"Fail to set , uniform type mis match\n";
+            std::cout << "Fail to set , uniform type mis match\n";
         }
 
         //set the matrix values
-        glUniformMatrix4fv(it->second._uLocation,1,false,&m4Matrix[0][0]);
+        glUniformMatrix4fv(it->second._uLocation, 1, false, &m4Matrix[0][0]);
     }
-    catch(...)
+    catch (...)
     {
-        std::cout<<"Failed to Set Uniform , check for :\n";
-        std::cout<<"Did program create\n";
-        std::cout<<"Check Active program name\n";
+        std::cout << "Failed to Set Uniform , check for :\n";
+        std::cout << "Did program create\n";
+        std::cout << "Check Active program name\n";
     }
 }
 } // namespace SGEngine

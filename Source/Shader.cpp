@@ -1,7 +1,6 @@
 #include "Shader.h"
 #include "Core.h"
 
-
 namespace SGEngine
 {
 
@@ -16,13 +15,14 @@ ShaderVariable<Shader_Uniform, Shader_UniformType>::ShaderVariable(Shader_Unifor
 {
   _variable = variable;
   _type = type;
-} 
+}
 
 Shader::Shader(const char *shaderName, const char *vs_file, const char *fs_file)
 {
   shaderProgramName = shaderName;
   _vertex_shader_file = vs_file;
   _fragment_shader_file = fs_file;
+  glGenVertexArrays(1, &vao);
 }
 
 Shader::~Shader()

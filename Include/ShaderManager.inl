@@ -12,7 +12,7 @@ void SGShaderManager::SetVertexAttribute(Shader_Semantic semantic, const T *cons
     if (!(it->second._eType == VT_FLOAT_VEC3 ||
           it->second._eType == VT_FLOAT_VEC4))
     {
-      std::cout << "Invalid type passed , Check Shader_VariableTypes for the supported shader data types\n";
+      std::cout << "Invalid type , Check Shader_VariableTypes for the supported shader data types\n";
     }
     SetVertexAttribute(it->second, pParam, bEnable, strideBytes, offsetBytes, normalize);
   }

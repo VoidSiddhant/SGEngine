@@ -7,7 +7,7 @@
 
 namespace SGEngine
 {
-  /* Variable types present inside the shader file , GLSL types (vec3,vec4,vec2)*/
+/* Variable types present inside the shader file , GLSL types (vec3,vec4,vec2)*/
 enum Shader_VariableType
 {
   VT_FLOAT_VEC2 = GL_FLOAT_VEC2,
@@ -30,15 +30,16 @@ enum Shader_Uniform
 template <typename variable, typename type>
 class ShaderVariable
 {
-    friend class SGShaderManager;
+  friend class SGShaderManager;
+
 public:
+  ShaderVariable();
   ShaderVariable(variable, type);
   SG_INLINE bool operator==(const ShaderVariable<variable, type> &inValue);
+  ShaderVariable<variable, type> &operator=(const ShaderVariable<variable, type> &v);
 
 private:
   //Prevent Copying
-  ShaderVariable<variable, type> &
-  operator=(const ShaderVariable<variable, type> &v);
 
   variable _variable;
   type _type;
@@ -50,15 +51,16 @@ typedef ShaderVariable<Shader_Uniform, Shader_UniformType> ShaderUniform;
 class Shader
 {
   friend class SGShaderManager;
+
 public:
   Shader(const char *shaderName, const char *vs_file, const char *fs_file);
   ~Shader();
 
   template <typename variable, typename type>
-  void AddVariable(const ShaderVariable<variable, type> &_variable, std::string variableName);
+  void AddVariable(const ShaderVariable<variable, type> &_variable, std::string variableName, int size);
 
 private:
-/* VariableInfo : structure to specify shader inside variables
+  /* VariableInfo : structure to specify shader inside variables
 * Contents:
   * ShaderVariable :  Class to store Semantics with datatype(GLSL) present in 
                         the shader file
@@ -69,10 +71,11 @@ private:
   {
     ShaderVariable<variable, type> _shaderVariable;
 
-    std::string _strName;  // ACtual name of the variable inside the shader file
+    std::string _strName; // ACtual name of the variable inside the shader file
     bool _isVerified;
+    int _dataSize;
 
-    VariableInfo(ShaderVariable<variable, type> v, std::string variableName);
+    VariableInfo(ShaderVariable<variable, type> v, std::string variableName, int size);
   };
 
   //Prevent Copying of object
@@ -85,8 +88,8 @@ private:
       ShaderManager for storage and verification*/
   typedef std::vector<ShaderAttributeInfo> Vector_ShaderAttributeInfo;
   using Vector_ShaderUniformInfo = std::vector<ShaderUniformInfo>;
-  
-  const Vector_ShaderAttributeInfo &getVector(const ShaderAttribute &attribute)
+
+  Vector_ShaderAttributeInfo &getVector(const ShaderAttribute &attribute)
   {
     return vector_sai;
   }
@@ -97,7 +100,8 @@ private:
 
   std::string _vertex_shader_file;
   std::string _fragment_shader_file;
-  std::string shaderProgramName;         // MUST BE UNIQUE THROGHOUT THE LIFE OF APPLICATION
+  std::string shaderProgramName; // MUST BE UNIQUE THROGHOUT THE LIFE OF APPLICATION
+  SG_UINT vao;
   Vector_ShaderAttributeInfo vector_sai;
   Vector_ShaderUniformInfo vector_sui;
 };
