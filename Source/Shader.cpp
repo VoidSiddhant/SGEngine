@@ -19,10 +19,10 @@ ShaderVariable<Shader_Uniform, Shader_UniformType>::ShaderVariable(Shader_Unifor
 
 Shader::Shader(const char *shaderName, const char *vs_file, const char *fs_file)
 {
-  shaderProgramName = shaderName;
-  _vertex_shader_file = vs_file;
-  _fragment_shader_file = fs_file;
-  glGenVertexArrays(1, &vao);
+	shaderProgramName = shaderName;
+	_vertex_shader_file = vs_file;
+	_fragment_shader_file = fs_file;
+
 }
 
 Shader::~Shader()

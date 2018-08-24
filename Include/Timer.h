@@ -2,7 +2,7 @@
 #define _TIMER_H
 
 #include "SGUtil.h"
-#include <GLFW/glfw3.h>
+#include <External/GLFW/glfw3.h>
 
 namespace SGEngine
 {
@@ -35,7 +35,7 @@ class SGTimer
     float _totalTime;
     float _fps, _timeElapsed, _frameCount;
     float _secsPerCnt;
-    __int64_t _prevCnts;
+    int64_t _prevCnts;
 };
 } // namespace SGEngine
 

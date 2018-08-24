@@ -7,9 +7,9 @@
 
 using namespace SGEngine;
 // Forward declaration
-enum class SGEngine::Shader_Semantic : uint
+enum class SGEngine::Shader_Semantic : SG_UINT
 {
-    SEMANTIC_POSTION,
+    SEMANTIC_POSTION ,
     SEMANTIC_COLOR,
     SEMANTIC_TEXCOORD
 };
@@ -32,18 +32,18 @@ class Application : public SGCore
         SGShapes::instance().Triangle2D(SGVector4(1.0f, 0.0f, 0.0f, 1.0f), m);
         triangle = new GameObject(SGVector3(0.0f, 0.0f, 0.0f), SGVector3(0.0f, 0.0f, 0.0f), m);
 
-        SGShapes::instance().Quad2D(SGVector4(0.0f, 1.0f, 0.0f, 1.0f), s);
-        square = new GameObject(SGVector3(0.0f, 0.0f, 0.0f), SGVector3(0.0f, 0.0f, 0.0f), s);
+        //SGShapes::instance().Quad2D(SGVector4(0.0f, 1.0f, 0.0f, 1.0f), s);
+        //square = new GameObject(SGVector3(0.0f, 0.0f, 0.0f), SGVector3(0.0f, 0.0f, 0.0f), s);
 
         simple = new Shader("Simple", "./Shader/vertex.vs", "./Shader/color.frag");
         simple->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_POSTION, VT_FLOAT_VEC3), "lPos", 3);
         simple->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_COLOR, VT_FLOAT_VEC4), "color", 4);
 
         SGShaderManager::instance().Create(*simple);
-        SGShaderManager::instance().BindVAO(*simple);
+		SGShaderManager::instance().EnableProgram("Simple");
+        SGShaderManager::instance().BindVAO();
         SGShaderManager::instance().EnableAttribute(Shader_Semantic::SEMANTIC_POSTION, sizeof(Vertex), 0, false);
         SGShaderManager::instance().EnableAttribute(Shader_Semantic::SEMANTIC_COLOR, sizeof(Vertex), sizeof(SGVector3));
-        SGShaderManager::instance().EnableProgram("Simple");
     }
 
     void Update(float dt)
@@ -56,15 +56,16 @@ class Application : public SGCore
     {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        SGShaderManager::instance().BindVAO(*simple);
-        square->render();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		SGShaderManager::instance().EnableProgram("Simple");
+		SGShaderManager::instance().BindVAO();
+        triangle->render();
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0); // TODO ABSTRACTION
         glfwSwapBuffers(mainWindow);
     }
 
     void ApplicationDispose()
     {
-        delete triangle, square, simple;
+        delete triangle, simple;
     }
 
     ~Application()

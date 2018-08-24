@@ -2,8 +2,8 @@
 #define _SHADER_H
 
 #include "SGUtil.h"
-#include <GL/glew.h>
-#include <glm/glm.hpp>
+#include <External/GL/glew.h>
+#include <External/glm/glm.hpp>
 
 namespace SGEngine
 {
@@ -20,7 +20,7 @@ enum Shader_UniformType
   UT_FLOAT_MAT4 = GL_FLOAT_MAT4
 };
 /*Forward declaration by the application*/
-enum class Shader_Semantic : uint;
+enum class Shader_Semantic : SG_UINT;
 
 enum Shader_Uniform
 {
@@ -101,7 +101,7 @@ private:
   std::string _vertex_shader_file;
   std::string _fragment_shader_file;
   std::string shaderProgramName; // MUST BE UNIQUE THROGHOUT THE LIFE OF APPLICATION
-  SG_UINT vao;
+
   Vector_ShaderAttributeInfo vector_sai;
   Vector_ShaderUniformInfo vector_sui;
 };

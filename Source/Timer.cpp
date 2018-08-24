@@ -11,7 +11,7 @@ SGTimer &SGTimer::instance()
 SGTimer::SGTimer()
 {
     _deltaTime = _fps = _frameCount = _timeElapsed = _totalTime = 0.0f;
-    __int64_t cntsPerSec = glfwGetTimerFrequency();
+	SG_INT64 cntsPerSec = glfwGetTimerFrequency();
     _secsPerCnt = (float)(1.0f / cntsPerSec);
 
     _prevCnts = glfwGetTimerValue();
@@ -19,8 +19,8 @@ SGTimer::SGTimer()
 
 void SGTimer::Tick()
 {
-    __int64_t currCnts = glfwGetTimerValue();
-    __int64_t delta = currCnts - _prevCnts;
+	SG_INT64 currCnts = glfwGetTimerValue();
+	SG_INT64 delta = currCnts - _prevCnts;
     _prevCnts = currCnts;
     _deltaTime = delta * _secsPerCnt;
 

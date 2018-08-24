@@ -2,7 +2,7 @@
 #define _VECTOR_H
 
 #include "SGUtil.h"
-#include <glm/glm.hpp>
+#include <External/glm/glm.hpp>
 #include <sstream>
 
 namespace SGEngine

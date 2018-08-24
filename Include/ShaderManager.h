@@ -46,10 +46,10 @@ private:
   struct ProgramBlob
   {
     ProgramBlob();
-
     SG_UINT _uId;                         // Shader Program Object blob ID
-    std::array<SG_UINT, 2> _aShaderIndex; //Index at which the shader blobs are loaded in the info shader array of vectors
+    std::array<unsigned int, 2> _aShaderIndex; //Index at which the shader blobs are loaded in the info shader array of vectors
 
+	SG_UINT vao;
     MapAttributes _mapAttributes;
     MapUniforms _mapUniform;
   };
@@ -59,7 +59,6 @@ private:
     ShaderBlob(int shaderId, std::string strShaderFilename);
 
     SG_UINT uId; // Shader Data Blob ID
-    SG_UINT vao; // Vertex array object
     std::string strFilename;
   };
 
@@ -72,9 +71,11 @@ public:
   static SGShaderManager &instance();
   void Create(Shader &shader);
   void EnableProgram(std::string shaderProgramName);
-  void EnableAttribute(Shader_Semantic semantic_name, unsigned strideBytes = 0, unsigned offsetBytes = 0, bool normalize = false) const;
+  void EnableAttribute(Shader_Semantic semantic_name, SG_UINT strideBytes = 0, SG_UINT offsetBytes = 0, bool normalize = false) const;
   void DisableAttribute(Shader_Semantic semantic_name) const;
-  void BindVAO(const Shader &);
+  //Bind Vertex Array Object for the current active shader.
+  void BindVAO();
+  void UnBindVAO();
   void SetUniform(Shader_Uniform uniform, const glm::mat4 &matrix) const;
   ~SGShaderManager();
 
@@ -83,11 +84,11 @@ private:
 
   SGShaderManager &ShaderManager(const SGShaderManager &obj);
   SGShaderManager &operator=(const SGShaderManager &c);
-
+  
   //Functions
   SG_UINT InitializeShader(const ShaderType &shaderType, const std::string &filename);
-  void Process(const uint programID, std::string shaderName, Shader::Vector_ShaderAttributeInfo &sai, MapAttributes &mAttributes);
-  void ProcessUniforms(const uint programID, std::string shaderName, Shader::Vector_ShaderUniformInfo &sui, MapUniforms &mUniforms);
+  void ProcessAttributes(const SG_UINT programID, std::string shaderName, Shader::Vector_ShaderAttributeInfo &sai, MapAttributes &mAttributes);
+  void ProcessUniforms(const SG_UINT programID, std::string shaderName, Shader::Vector_ShaderUniformInfo &sui, MapUniforms &mUniforms);
   template <typename T>
   void SetVertexAttribute(Shader_Semantic semantic, const T *const pParam, bool bEnable, SG_UINT strideBytes, SG_UINT offsetBytes, bool normalize) const;
   void SetVertexAttribute(AttributeVariable attrib, const void *const pVoid, bool bEnable, SG_UINT strideBytes, SG_UINT offsetBytes, bool normalize) const;

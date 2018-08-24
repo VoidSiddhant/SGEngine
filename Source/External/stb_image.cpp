@@ -1,3 +1,3 @@
 
 #define STB_IMAGE_IMPLEMENTAION
-#include "stb_image.h"
+#include "External/stb_image.h"

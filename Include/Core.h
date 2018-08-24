@@ -1,8 +1,8 @@
 #ifndef _CORE_H
 #define _CORE_H
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <External/GL/glew.h>
+#include <External/GLFW/glfw3.h>
 #include <SGUtil.h>
 
 void ProcessInput(GLFWwindow *window, int key, int scancode, int action, int mods);

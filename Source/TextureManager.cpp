@@ -10,6 +10,6 @@ namespace SGEngine
 
     void TextureManager::GenerateTexture(const char* file)
     {
-        textures
+        //textures
     }
 }

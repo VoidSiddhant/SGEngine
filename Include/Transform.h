@@ -8,7 +8,7 @@ namespace SGEngine
     class Transform{
         public :
         Transform(){}
-        virtual ~Transform();
+		~Transform();
 
         protected:
         SGVector3 position,scale,rotation;
