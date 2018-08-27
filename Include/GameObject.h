@@ -2,6 +2,8 @@
 #define _GAMEOBJECT_H
 #include "Vector.h"
 #include "SGUtil.h"
+//#include "Renderer.h"
+
 //#include "Transform.h"
 namespace SGEngine
 {
@@ -14,6 +16,11 @@ namespace SGEngine
     {
         std::vector<Vertex> vertex_list;      
         std::vector<SG_UINT> index_list;
+
+		Mesh()
+		{
+
+		}
 
         Mesh(const Mesh& copyMesh)
         {
@@ -82,7 +89,7 @@ namespace SGEngine
 	{
 		struct Mesh{}
 	}
-	 // THIS IS AMAZING SUCH ABSTRACTION MUCH WOW
+	
 
 	class SGGameObject : SGTransform
 	{

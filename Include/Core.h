@@ -13,7 +13,7 @@ class SGCore
 {
   public:
     static SGCore &instance();
-
+    
     int InitEngine();
     int run();
     int EngineDispose();

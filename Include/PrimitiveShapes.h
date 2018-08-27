@@ -3,7 +3,7 @@
 #include "GameObject.h"
 namespace SGEngine
 {
-class SGShapes : public Mesh
+class SGShapes
 {
   public:
     static SGShapes& instance();

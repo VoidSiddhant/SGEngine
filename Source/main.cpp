@@ -82,7 +82,7 @@ class Application : public SGCore
     }
 };
 
-int main()
+int APIENTRY main()
 {
     Application::Create();
     Application::instance().InitEngine();

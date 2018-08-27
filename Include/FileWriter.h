@@ -8,7 +8,7 @@ namespace SGEngine
 	class SGFileWriter final
 	{
 	private :
-		using manip = std::ostream& (*)(std::ostream&);  // catch this function signature
+		using manip = std::ostream& (*)(std::ostream&);  // catch this function signature std::endl
 	public:
 		SGFileWriter(const char* filename);
 		void Close();

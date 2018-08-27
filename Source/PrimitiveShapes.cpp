@@ -17,6 +17,7 @@ void SGShapes::Triangle2D(const SGVector4 &color, Mesh &outMesh)
 
     outMesh.index_list = {
         0, 1, 2};
+
 }
 
 void SGShapes::Quad2D(const SGVector4 &color, Mesh &outMesh)

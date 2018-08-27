@@ -60,7 +60,7 @@ SG_UINT SGShaderManager::InitializeShader(const ShaderType &shaderType, const st
         break;
     }
 
-    VECTOR_ShaderBlob &vector_loadedShader = _avShaderBlob[shaderType];
+    VECTOR_ShaderBlob& vector_loadedShader = _avShaderBlob[shaderType];
 
     for (unsigned int shader = 0; shader < vector_loadedShader.size(); ++shader)
     {
@@ -247,7 +247,7 @@ void SGShaderManager::Create(Shader &shader)
 {
 #ifdef _DEBUG
 	SGFileWriter logger("BuildLog.txt");
-	logger << "Creating Shader\n";
+	logger << "Creating Shader"<<std::endl;
 #endif
     SPTR_ProgramBlob programBlob = nullptr;
     // Check if Shader already has been created

@@ -20,10 +20,10 @@ public:
 
   SG_INLINE void operator=(const SGVector2 &);
   SG_INLINE bool operator==(const SGVector2 &);
-  SG_INLINE SGVector2 operator+(const SGVector2 &);
-  SG_INLINE void operator+=(const SGVector2 &);
-  SG_INLINE SGVector2 operator-(const SGVector2 &);
-  SG_INLINE  void operator-=(const SGVector2 &);
+  SG_INLINE SGVector2& operator+(const SGVector2 &);
+  SG_INLINE SGVector2& operator+=(const SGVector2 &);
+  SG_INLINE SGVector2& operator-(const SGVector2 &);
+  SG_INLINE  SGVector2& operator-=(const SGVector2 &);
   SG_INLINE friend std::ostream &operator<<(std::ostream &o, const SGVector2 &v);
 
   ~SGVector2() {}
@@ -46,9 +46,9 @@ public:
 
   SG_INLINE void operator=(const SGVector3 &);
   SG_INLINE bool operator==(const SGVector3 &);
-  SG_INLINE SGVector3 operator+(const SGVector3 &);
+  SG_INLINE SGVector3& operator+(const SGVector3 &);
   SG_INLINE void operator+=(const SGVector3 &);
-  SG_INLINE SGVector3 operator-(const SGVector3 &);
+  SG_INLINE SGVector3& operator-(const SGVector3 &);
   SG_INLINE void operator-=(const SGVector3 &);
   SG_INLINE friend std::ostream &operator<<(std::ostream &o, const SGVector3 &v);
 
@@ -74,9 +74,9 @@ public:
 
   SG_INLINE void operator=(const SGVector4 &);
   SG_INLINE bool operator==(const SGVector4 &);
-  SG_INLINE SGVector4 operator+(const SGVector4 &);
+  SG_INLINE SGVector4& operator+(const SGVector4 &);
   SG_INLINE void operator+=(const SGVector4 &);
-  SG_INLINE SGVector4 operator-(const SGVector4 &);
+  SG_INLINE SGVector4& operator-(const SGVector4 &);
   SG_INLINE void operator-=(const SGVector4 &);
   SG_INLINE friend std::ostream &operator<<(std::ostream &o, const SGVector4 &v);
 
