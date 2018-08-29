@@ -8,7 +8,7 @@ SGShapes &SGShapes::instance()
     return *_instance;
 }
 
-void SGShapes::Triangle2D(const SGVector4 &color, Mesh &outMesh)
+void SGShapes::Triangle2D(const SGVector4 &color, SGMeshFilter &outMesh)
 {
     outMesh.vertex_list = {
         {SGVector3(0.5f, -0.5f, 0.0f), SGVector4(color) , SGVector2(1.0f,0.0f)},
@@ -18,9 +18,11 @@ void SGShapes::Triangle2D(const SGVector4 &color, Mesh &outMesh)
     outMesh.index_list = {
         0, 1, 2};
 
+	outMesh.SetVertexCount(3);
+	outMesh.SetIndexCount(3);
 }
 
-void SGShapes::Quad2D(const SGVector4 &color, Mesh &outMesh)
+void SGShapes::Quad2D(const SGVector4 &color, SGMeshFilter &outMesh)
 {
     outMesh.vertex_list = {
         {SGVector3(0.5f, -0.5f, 0.0f), SGVector4(color) , SGVector2(1.0f,0.0f)},
@@ -33,5 +35,7 @@ void SGShapes::Quad2D(const SGVector4 &color, Mesh &outMesh)
         0 , 3 , 2 ,
         0 , 1 , 2
     };
+	outMesh.SetVertexCount(4);
+	outMesh.SetIndexCount(6);
 }
 } // namespace SGEngine

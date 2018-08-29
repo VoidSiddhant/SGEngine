@@ -1,6 +1,7 @@
 #ifndef _RENDERER_H
 #define _RENDERER_H
 
+#include "Material.h"
 #include"Component.h"
 
 namespace SGEngine
@@ -8,14 +9,16 @@ namespace SGEngine
 	class SGRenderer : public SGComponent
 	{
 	public:
-		const type_ID& GetFamilyID() const {
-			return std::string("Render");
+		SGRenderer() {}
+		 const type_ID GetFamilyID() const {
+			return std::string("Component_Render");
 		}
 
 		virtual void Render() = 0;
 
-	private:
-
+		virtual ~SGRenderer() {}
+	protected:
+		SGMaterial material;
 	};
 }
 

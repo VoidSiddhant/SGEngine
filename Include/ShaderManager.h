@@ -49,7 +49,6 @@ private:
     SG_UINT _uId;                         // Shader Program Object blob ID
     std::array<unsigned int, 2> _aShaderIndex; //Index at which the shader blobs are loaded in the info shader array of vectors
 
-	SG_UINT vao;
     MapAttributes _mapAttributes;
     MapUniforms _mapUniform;
   };
@@ -73,9 +72,6 @@ public:
   void EnableProgram(std::string shaderProgramName);
   void EnableAttribute(Shader_Semantic semantic_name, SG_UINT strideBytes = 0, SG_UINT offsetBytes = 0, bool normalize = false) const;
   void DisableAttribute(Shader_Semantic semantic_name) const;
-  //Bind Vertex Array Object for the current active shader.
-  void BindVAO();
-  void UnBindVAO();
   void SetUniform(Shader_Uniform uniform, const glm::mat4 &matrix) const;
   ~SGShaderManager();
 

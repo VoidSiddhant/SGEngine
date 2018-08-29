@@ -12,8 +12,8 @@ namespace SGEngine
 	public:
 		using type_ID = std::string;
 
-		virtual const type_ID& GetFamilyID() = 0;
-		virtual const type_ID& GetMemberID() = 0;
+		virtual const type_ID GetFamilyID() const  = 0;
+		virtual const type_ID GetMemberID() const = 0;
 		virtual void Update() = 0;
 
 		void SetOwnerGO(const SGGameObject* go) {

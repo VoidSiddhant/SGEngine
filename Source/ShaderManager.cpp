@@ -27,7 +27,6 @@ SGShaderManager::ProgramBlob::ProgramBlob()
 {
     this->_uId = glCreateProgram();
     this->_aShaderIndex.empty();
-	glGenVertexArrays(1, &vao);
 }
 
 SGShaderManager::ShaderBlob::ShaderBlob(int shadertype, std::string filename)
@@ -342,35 +341,6 @@ SGShaderManager::~SGShaderManager()
     {
         std::cout << "Exception occurred , failed to glDelete(Shader)\n";
     }
-}
-
-void SGShaderManager::BindVAO()
-{
-    try
-    {
-		auto it = _map_ProgramBlob.find(activeShaderProgramName);
-        
-		if (it != _map_ProgramBlob.end())
-		{
-			glBindVertexArray(it->second->vao);
-		}
-		else
-		{
-			std::cout << "Error Active program not found \n Is the program created?\n";
-		}
-
-    }
-    catch (...)
-    {
-		std::cout << "Failed to bind vertex array object for shader : " << __FUNCTION__
-                  << std::endl
-                  << "Make Sure the vertex array object exist for the shader\n";
-    }
-}
-
-void SGShaderManager::UnBindVAO()
-{
-	glBindVertexArray(0);
 }
 
 void SGShaderManager::EnableProgram(std::string shaderProgramName)

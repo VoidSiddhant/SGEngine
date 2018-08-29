@@ -4,6 +4,7 @@
 #include "ShaderManager.h"
 #include "Vector.h"
 #include "PrimitiveShapes.h"
+#include "GameObject.h"
 
 using namespace SGEngine;
 // Forward declaration
@@ -27,24 +28,25 @@ class Application : public SGCore
 
     void Start()
     {
-        // ABSTRACTION FOR THE WIN
-        Mesh m, s;
-        SGShapes::instance().Triangle2D(SGVector4(1.0f, 0.0f, 0.0f, 1.0f), m);
-        triangle = new GameObject(SGVector3(0.0f, 0.0f, 0.0f), SGVector3(0.0f, 0.0f, 0.0f), m);
+		SGMeshFilter m, s;
 
-        //SGShapes::instance().Quad2D(SGVector4(0.0f, 1.0f, 0.0f, 1.0f), s);
-        //square = new GameObject(SGVector3(0.0f, 0.0f, 0.0f), SGVector3(0.0f, 0.0f, 0.0f), s);
+        simpleShader = new Shader("Simple", "./Shader/vertex.vs", "./Shader/color.frag");
+        simpleShader->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_POSTION, VT_FLOAT_VEC3), "lPos", 3);
+        simpleShader->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_COLOR, VT_FLOAT_VEC4), "color", 4);
+		
+		//Triangle GameObject
+		SGShapes::instance().Triangle2D(SGVector4(1.0f, 0.0f, 0.0f, 1.0f), m);
+		triangle = new SGGameObject(SGVector3(0.0f, 0.0f, 0.0f), SGVector3(0.0f, 0.0f, 0.0f), "Triangle");
+		SGComponent* triangleRender = new SGMeshRenderer(m,simpleShader);
+		triangle->AddComponent(triangleRender);
 
-        simple = new Shader("Simple", "./Shader/vertex.vs", "./Shader/color.frag");
-        simple->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_POSTION, VT_FLOAT_VEC3), "lPos", 3);
-        simple->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_COLOR, VT_FLOAT_VEC4), "color", 4);
+		//Square GameObject
+		square = new SGGameObject(SGVector3(0.0f, 0.0f, 0.0f), SGVector3(0.0f, 0.0f, 0.0f), "Square");
+		SGShapes::instance().Quad2D(SGVector4(0.0f, 1.0f, 0.0f, 1.0f), s);
+		SGComponent* squareRender = new SGMeshRenderer(s,simpleShader);
+		square->AddComponent(squareRender);
 
-        SGShaderManager::instance().Create(*simple);
-		SGShaderManager::instance().EnableProgram("Simple");
-        SGShaderManager::instance().BindVAO();
-        SGShaderManager::instance().EnableAttribute(Shader_Semantic::SEMANTIC_POSTION, sizeof(Vertex), 0, false);
-        SGShaderManager::instance().EnableAttribute(Shader_Semantic::SEMANTIC_COLOR, sizeof(Vertex), sizeof(SGVector3));
-    }
+	}
 
     void Update(float dt)
     {
@@ -56,26 +58,30 @@ class Application : public SGCore
     {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-		SGShaderManager::instance().EnableProgram("Simple");
-		SGShaderManager::instance().BindVAO();
-        triangle->render();
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0); // TODO ABSTRACTION
-        glfwSwapBuffers(mainWindow);
+		
+		//SQUARE
+		square->Render();
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); 
+
+		//TRIANGLE
+        triangle->Render();
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+        
+		glfwSwapBuffers(mainWindow);
     }
 
     void ApplicationDispose()
     {
-        delete triangle, simple;
+        delete triangle, simpleShader,square;
     }
 
     ~Application()
     {
-    }
+    }  
 
   private:
-    SG_UINT vbo, vao, ebo;
-    Shader *simple;
-    GameObject *triangle, *square;
+    Shader *simpleShader;
+    SGGameObject *triangle, *square;
 
     Application()
     {

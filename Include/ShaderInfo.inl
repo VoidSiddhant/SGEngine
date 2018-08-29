@@ -28,13 +28,13 @@ void Shader::AddVariable(const ShaderVariable<t_variable, t_type>& _variable, st
     //Check for duplicates
     std::vector<VariableInfo<t_variable, t_type>> &vinfo = getVector(_variable);
     
-   /* for(const VariableInfo<t_variable, t_type>& info : vinfo)
+    for(const VariableInfo<t_variable, t_type>& info : vinfo)
         {
-            if (info._shaderVariable._variable == _variable._variable)
+            if (info._strName == variableName)
             {
                 std::cout << "Error Variable Already Exist in shader program : "<<shaderProgramName<<std::endl;
             }
-        }*/
+        }
     //Store the variable
     vinfo.push_back(VariableInfo<t_variable, t_type>(_variable, variableName,size));
 }

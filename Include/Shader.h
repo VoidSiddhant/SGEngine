@@ -31,7 +31,7 @@ template <typename variable, typename type>
 class ShaderVariable
 {
   friend class SGShaderManager;
-
+  friend class SGMaterial;
 public:
   ShaderVariable();
   ShaderVariable(variable, type);
@@ -51,6 +51,7 @@ typedef ShaderVariable<Shader_Uniform, Shader_UniformType> ShaderUniform;
 class Shader
 {
   friend class SGShaderManager;
+  friend class SGMaterial;
 
 public:
   Shader(const char *shaderName, const char *vs_file, const char *fs_file);

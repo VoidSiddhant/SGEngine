@@ -5,10 +5,16 @@
 
 namespace SGEngine
 {
-    class Transform{
+    class SGTransform{
         public :
-        Transform(){}
-		~Transform();
+			SGTransform();
+			SGTransform(SGVector3 position, SGVector3 scale);
+
+			void SetRotation(const SGVector3 value);
+			void SetScale(const SGVector3 value);
+			void SetPosition(const SGVector3 value);
+			
+			~SGTransform() {}
 
         protected:
         SGVector3 position,scale,rotation;

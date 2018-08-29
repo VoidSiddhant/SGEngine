@@ -1,14 +1,14 @@
 #ifndef _SHAPES_H
 #define _SHAPES_H
-#include "GameObject.h"
+#include "Mesh.h"
 namespace SGEngine
 {
 class SGShapes
 {
   public:
     static SGShapes& instance();
-    void Triangle2D(const SGVector4& color, Mesh& outMesh);
-    void Quad2D(const SGVector4& color , Mesh& outMesh);
+    void Triangle2D(const SGVector4& color, SGMeshFilter& outMesh);
+    void Quad2D(const SGVector4& color , SGMeshFilter& outMesh);
   private:
     SGShapes(){}
     ~SGShapes(){}
