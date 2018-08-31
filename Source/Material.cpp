@@ -6,17 +6,15 @@ namespace SGEngine
 {
 	SGMaterial::SGMaterial()
 	{
-
+		activeShader = nullptr;
 	}
 
 	SGMaterial::~SGMaterial()
 	{
-		delete activeShader;
-		glBindVertexArray(0);
-		glDeleteVertexArrays(1, &vao);
+
 	}
 
-	void SGMaterial::BindVAO() const
+	void SGMaterial::BindVAO(const SG_UINT& vao) const
 	{
 		glBindVertexArray(vao);
 	}
@@ -26,25 +24,31 @@ namespace SGEngine
 		glBindVertexArray(0);
 	}
 
-	void SGMaterial::Initialize(Shader* shader)
+	void SGMaterial::Initialize() const
 	{
-		activeShader = shader;
-		SGShaderManager::instance().Create(*shader);
-		SGShaderManager::instance().EnableProgram(shader->shaderProgramName);
-		glGenVertexArrays(1, &vao);
-		this->BindVAO();
+		// Generate Shader data
+		SGShaderManager::instance().Create(*activeShader);
+		// Set Active shader program , to reflect any changes
+		SGShaderManager::instance().EnableProgram(activeShader->shaderProgramName);
+	}
+
+	void SGMaterial::BuildVAO(const SG_UINT& vao) const
+	{
+		SGShaderManager::instance().EnableProgram(activeShader->shaderProgramName);
+		this->BindVAO(vao);
 		SG_UINT offsetBytes = 0;
-		for (Shader::ShaderAttributeInfo attribInfo : shader->vector_sai)
+		for (Shader::ShaderAttributeInfo attribInfo : activeShader->vector_sai)
 		{
-			offsetBytes = static_cast<SG_UINT>(attribInfo._shaderVariable._variable)*sizeof(SGVector3);
+			offsetBytes = static_cast<SG_UINT>(attribInfo._shaderVariable._variable) * sizeof(SGVector3);
 			SGShaderManager::instance().EnableAttribute(attribInfo._shaderVariable._variable
-														, sizeof(SGVertex), offsetBytes, false);
+				, sizeof(SGVertex), offsetBytes, false);
 		}
 		this->UnBindVAO();
 	}
 
-	void SGMaterial::SetShader(Shader* const shader)
+	void SGMaterial::SetShader(SG_PTRS<Shader> const shader)
 	{
 		activeShader = shader;
+		this->Initialize();
 	}
 }

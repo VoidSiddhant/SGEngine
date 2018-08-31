@@ -25,6 +25,10 @@
 #define SG_INT64 int64_t
 #define SG_UINT unsigned int
 #define SG_INLINE inline
+#define SG_PTRS std::shared_ptr
+#define SG_PTRU std::unique_ptr
+#define SG_MAKEPTRS std::make_shared
+#define SG_MAKEPTRU std::make_unique
 
 #define SG_DEBUG_START	ifdef _DEBUG
 #define SG_DEBUG_END	#endif

@@ -23,30 +23,35 @@ namespace SGEngine
 		indexCount = count;
 	}
 
-	SGMeshRenderer::SGMeshRenderer(SGMeshFilter mesh_copy,Shader* const shader)
+	SGMeshRenderer::SGMeshRenderer(SGMeshFilter mesh_copy,SG_PTRS<SGMaterial> mat)
 	{
+		material = mat;
+
 		this->mesh = mesh_copy;
-		vbo = ebo = 0;
+		vao = vbo = ebo = 0;
+		glGenVertexArrays(1, &vao);
+
 		glGenBuffers(1, &vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(SGVertex)*mesh.vertex_list.size(), &mesh.vertex_list[0], GL_STATIC_DRAW);
+		
+		// BUILD VAO OF THIS OBJECT USING THIS MATERIAL
+		material->BuildVAO(vao);
 
-		material.Initialize(shader);
-		material.BindVAO();
-
+		material->BindVAO(vao);
 		glGenBuffers(1, &ebo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(SG_UINT)*mesh.index_list.size(), &mesh.index_list[0], GL_STATIC_DRAW);
 		
-		material.UnBindVAO();
+		material->UnBindVAO();
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
 	void SGMeshRenderer::Render()
 	{
-		SGShaderManager::instance().EnableProgram(material.GetShaderName());
-		material.BindVAO();
+		SGShaderManager::instance().EnableProgram(material->GetShaderName());
+		material->BindVAO(vao);
 	}
 
 	void SGMeshRenderer::AddMesh(const SGMeshFilter mesh_copy)
@@ -56,11 +61,13 @@ namespace SGEngine
 
 	SGMeshRenderer::~SGMeshRenderer()
 	{
+		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
+		
+		glDeleteBuffers(1, &vao);
 		glDeleteBuffers(1, &vbo);
 		glDeleteBuffers(1, &ebo);
-		vbo = ebo = 0;
+		vao = vbo = ebo = 0;
 	}
 }

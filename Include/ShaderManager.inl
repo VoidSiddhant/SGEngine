@@ -23,3 +23,28 @@ void SGShaderManager::SetVertexAttribute(Shader_Semantic semantic, const T *cons
     std::cout << "Check if program is created\n";
   }
 }
+
+template<typename t_value_type>
+void SGShaderManager::SetUniform(const Shader_Uniform uniform_name,const t_value_type& t_data_type) const
+{
+	// Check if this unifrom_name exist in the current loaded shader
+	try
+	{
+		SPTR_ProgramBlob shared_program = _map_ProgramBlob.at(activeShaderProgramName);
+		MapUniforms::const_iterator it = shared_program->_mapUniform.find(uniform_name);
+
+		if (it == shared_program->_mapUniform.end())
+		{
+			std::cout << "Failed to Set , Uniform not found : \n";
+		}
+		else
+		{
+			this->SetUniform(it->second, t_data_type);
+		}
+	}
+	catch (...)
+	{
+		std::cout << "UnExpected Error Thrown from Function : " << __FUNCTION__ << std::endl;
+	}
+}
+

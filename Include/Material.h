@@ -13,17 +13,19 @@ namespace SGEngine
 		SGMaterial();
 		~SGMaterial();
 
-		void Initialize(Shader* shader);
-		void SetShader(Shader*const shader);
+		void SetShader(SG_PTRS<Shader>const shader);
 		std::string GetShaderName()  {
 			return activeShader->shaderProgramName;
 		}
-		void BindVAO() const;
+
+		void BuildVAO(const SG_UINT& vao) const;
+		void BindVAO(const SG_UINT& vao) const;
 		void UnBindVAO() const;
 
 	private:
-		Shader * activeShader;
-		SG_UINT vao;
+
+		void Initialize() const;
+		SG_PTRS<Shader> activeShader;
 	};
 };
 

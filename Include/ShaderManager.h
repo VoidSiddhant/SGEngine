@@ -6,6 +6,7 @@
 #include <memory>
 #include <unordered_map>
 #include "Shader.h"
+#include "Vector.h"
 
 namespace SGEngine
 {
@@ -20,18 +21,19 @@ private:
 
   struct AttributeVariable
   {
-    AttributeVariable(Shader_VariableType eType, SG_UINT uLocationIn, int size);
+    AttributeVariable(Shader_SemanticDataType eType, SG_UINT uLocationIn, int size);
 
     SG_UINT _uLocation;
-    Shader_VariableType _eType;    int _iSize;
+    Shader_SemanticDataType _eType;    
+	int _iSize;
   };
 
   struct UniformVariable
   {
-    UniformVariable(Shader_UniformType, SG_UINT uLocation);
+    UniformVariable(Shader_UniformDataType, SG_UINT uLocation);
 
     SG_UINT _uLocation;
-    Shader_UniformType _eType;
+    Shader_UniformDataType _eType;
   };
   /* Usage:
   * To access the stored variables in the shader
@@ -72,7 +74,9 @@ public:
   void EnableProgram(std::string shaderProgramName);
   void EnableAttribute(Shader_Semantic semantic_name, SG_UINT strideBytes = 0, SG_UINT offsetBytes = 0, bool normalize = false) const;
   void DisableAttribute(Shader_Semantic semantic_name) const;
-  void SetUniform(Shader_Uniform uniform, const glm::mat4 &matrix) const;
+  template<typename t_value_type>
+  void SetUniform(const Shader_Uniform uniform_name,const t_value_type& t_data) const;
+
   ~SGShaderManager();
 
 private:
@@ -88,6 +92,10 @@ private:
   template <typename T>
   void SetVertexAttribute(Shader_Semantic semantic, const T *const pParam, bool bEnable, SG_UINT strideBytes, SG_UINT offsetBytes, bool normalize) const;
   void SetVertexAttribute(AttributeVariable attrib, const void *const pVoid, bool bEnable, SG_UINT strideBytes, SG_UINT offsetBytes, bool normalize) const;
+  void SetUniform(const UniformVariable uniform,  glm::mat4 &matrix) const;
+  void SetUniform(const UniformVariable uniform,const SGVector4 &value) const;
+  void SetUniform(const UniformVariable uniform,const SGVector3 &value) const;
+  void SetUniform(const UniformVariable uniform,const SGVector2 &value) const;
   //Data
   std::string activeShaderProgramName;
 

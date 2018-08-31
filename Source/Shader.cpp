@@ -5,13 +5,13 @@ namespace SGEngine
 {
 
 template <>
-ShaderVariable<Shader_Semantic, Shader_VariableType>::ShaderVariable(Shader_Semantic variable, Shader_VariableType type)
+ShaderVariable<Shader_Semantic, Shader_SemanticDataType>::ShaderVariable(Shader_Semantic variable, Shader_SemanticDataType type)
 {
   _variable = variable;
   _type = type;
 }
 template <>
-ShaderVariable<Shader_Uniform, Shader_UniformType>::ShaderVariable(Shader_Uniform variable, Shader_UniformType type)
+ShaderVariable<Shader_Uniform, Shader_UniformDataType>::ShaderVariable(Shader_Uniform variable, Shader_UniformDataType type)
 {
   _variable = variable;
   _type = type;

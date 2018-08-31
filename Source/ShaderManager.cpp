@@ -10,14 +10,14 @@ SGShaderManager &SGShaderManager::instance()
     return *_instance;
 }
 
-SGShaderManager::AttributeVariable::AttributeVariable(Shader_VariableType etype, SG_UINT uLocation, int size)
+SGShaderManager::AttributeVariable::AttributeVariable(Shader_SemanticDataType etype, SG_UINT uLocation, int size)
 {
     this->_uLocation = uLocation;
     this->_eType = etype;
     this->_iSize = size;
 }
 
-SGShaderManager::UniformVariable::UniformVariable(Shader_UniformType etype, SG_UINT uLocation)
+SGShaderManager::UniformVariable::UniformVariable(Shader_UniformDataType etype, SG_UINT uLocation)
 {
     this->_uLocation = uLocation;
     this->_eType = etype;
@@ -132,7 +132,7 @@ void SGShaderManager::ProcessAttributes(const SG_UINT programID, std::string sha
 
         glGetActiveAttrib(programID, i, iMaxLength, NULL, &iSize, &eType, p_attribute_name.get());
 
-        Shader_VariableType eAttributeType = static_cast<Shader_VariableType>(eType); // type as defined inside the shader file
+        Shader_SemanticDataType eAttributeType = static_cast<Shader_SemanticDataType>(eType); // type as defined inside the shader file
 
         //Verify
         bool bFound = false;
@@ -203,7 +203,7 @@ void SGShaderManager::ProcessUniforms(const SG_UINT programID, std::string shade
         GLenum etype;
         glGetActiveUniform(programID, i, max_length, NULL, &iSize, &etype, namebuffer);
 
-        Shader_UniformType e_uniform_type = static_cast<Shader_UniformType>(etype);
+        Shader_UniformDataType e_uniform_type = static_cast<Shader_UniformDataType>(etype);
         bool bFound = false;
         for (auto it = vSui.begin(); it != vSui.end(); it++)
         {
@@ -226,7 +226,7 @@ void SGShaderManager::ProcessUniforms(const SG_UINT programID, std::string shade
             }
         }
     }
-	delete namebuffer;
+	delete namebuffer;   // MEMORY LEAK.............!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     // Confirm all the uniforms are verified and map them
     for (const Shader::ShaderUniformInfo &uinfo : vSui)
@@ -252,7 +252,7 @@ void SGShaderManager::Create(Shader &shader)
     // Check if Shader already has been created
     try
     {
-        auto it = _map_ProgramBlob.find(shader.shaderProgramName);
+        auto it = _map_ProgramBlob.find(shader.shaderProgramName);  // FAULT
         if (it != _map_ProgramBlob.end())
         {
             std::cout << "Shader Already Created , no need to create\n";
@@ -366,6 +366,11 @@ void SGShaderManager::DisableAttribute(Shader_Semantic semantic) const
     SetVertexAttribute(semantic, reinterpret_cast<const void *const>(0), false, 0, 0, false);
 }
 
+	/*	***************************************************************************
+		********************** PRIVATE METHODS ************************************
+		*************************************************************************** */
+
+
 void SGShaderManager::SetVertexAttribute(AttributeVariable attrib, const void *const pVoid, bool bEnable, SG_UINT strideBytes, SG_UINT offsetBytes, bool isNormalized) const
 {
 	try {
@@ -386,24 +391,17 @@ void SGShaderManager::SetVertexAttribute(AttributeVariable attrib, const void *c
     
 }
 
-void SGShaderManager::SetUniform(Shader_Uniform eType, const glm::mat4 &m4Matrix) const
+void SGShaderManager::SetUniform(const SGShaderManager::UniformVariable uniform_var, glm::mat4 &m4Matrix) const
 {
     try
     {
-        SPTR_ProgramBlob shared_program = _map_ProgramBlob.at(activeShaderProgramName);
-
-        MapUniforms::const_iterator it = shared_program->_mapUniform.find(eType);
-        if (it == shared_program->_mapUniform.end())
-        {
-            std::cout << "Fail to set , Uniform not found\n";
-        }
-        else if (!(it->second._eType == UT_FLOAT_MAT4))
+        if (!(uniform_var._eType == UT_FLOAT_MAT4))
         {
             std::cout << "Fail to set , uniform type mis match\n";
         }
 
         //set the matrix values
-        glUniformMatrix4fv(it->second._uLocation, 1, false, &m4Matrix[0][0]);
+        glUniformMatrix4fv(uniform_var._uLocation, 1, false, &m4Matrix[0][0]);
     }
     catch (...)
     {
@@ -412,4 +410,65 @@ void SGShaderManager::SetUniform(Shader_Uniform eType, const glm::mat4 &m4Matrix
         std::cout << "Check Active program name\n";
     }
 }
+
+void SGShaderManager::SetUniform(const UniformVariable uniform_var,const SGVector4& mValue) const
+{
+	try
+	{
+		if (!(uniform_var._eType == UT_FLOAT_VEC4))
+		{
+			std::cout << "Fail to set , uniform type mis match\n";
+		}
+
+		//set the matrix values
+		glUniform4fv(uniform_var._uLocation, 1, reinterpret_cast<const float*>(&mValue.vector));
+	}
+	catch (...)
+	{
+		std::cout << "Failed to Set Uniform , check for :\n";
+		std::cout << "Did program create\n";
+		std::cout << "Check Active program name\n";
+	}
+}
+
+void SGShaderManager::SetUniform(const UniformVariable uniform_var,const SGVector3& mValue) const
+{
+	try
+	{
+		if (!(uniform_var._eType == UT_FLOAT_VEC4))
+		{
+			std::cout << "Fail to set , uniform type mis match\n";
+		}
+
+		//set the matrix values
+		glUniform3fv(uniform_var._uLocation, 1, reinterpret_cast<const float*>(&mValue.vector));
+	}
+	catch (...)
+	{
+		std::cout << "Failed to Set Uniform , check for :\n";
+		std::cout << "Did program create\n";
+		std::cout << "Check Active program name\n";
+	}
+}
+
+void SGShaderManager::SetUniform(const UniformVariable uniform_var,const SGVector2& mValue) const
+{
+	try
+	{
+		if (!(uniform_var._eType == UT_FLOAT_VEC4))
+		{
+			std::cout << "Fail to set , uniform type mis match\n";
+		}
+
+		//set the matrix values
+		glUniform2fv(uniform_var._uLocation, 1, reinterpret_cast<const float*>(&mValue.vector));
+	}
+	catch (...)
+	{
+		std::cout << "Failed to Set Uniform , check for :\n";
+		std::cout << "Did program create?\n";
+		std::cout << "Check Active program name\n";
+	}
+}
+
 } // namespace SGEngine

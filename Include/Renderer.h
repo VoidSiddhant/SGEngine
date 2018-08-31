@@ -1,6 +1,7 @@
 #ifndef _RENDERER_H
 #define _RENDERER_H
 
+#include "SGUtil.h"
 #include "Material.h"
 #include"Component.h"
 
@@ -18,7 +19,7 @@ namespace SGEngine
 
 		virtual ~SGRenderer() {}
 	protected:
-		SGMaterial material;
+		SG_PTRS<SGMaterial> material;
 	};
 }
 

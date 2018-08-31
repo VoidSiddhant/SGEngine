@@ -49,12 +49,18 @@ namespace SGEngine
 	{
 	public :
 
-		explicit SGMeshRenderer(SGMeshFilter mesh_copy,Shader * const shader);
+		explicit SGMeshRenderer(SGMeshFilter mesh_copy,SG_PTRS<SGMaterial> material);
 		~SGMeshRenderer();
 
 		const type_ID GetMemberID() const {
 			return type_ID("Component_MeshRenderer");
 		}
+
+		void SetMaterial(SGMaterial* const mat) {}
+
+		//SGMaterial* GetMaterial() {
+		//	return material;
+	//	}
 
 		void AddMesh(const SGMeshFilter mesh_copy);
 		PMesh GetMesh() {

@@ -8,24 +8,24 @@
 namespace SGEngine
 {
 /* Variable types present inside the shader file , GLSL types (vec3,vec4,vec2)*/
-enum Shader_VariableType
+enum Shader_SemanticDataType
 {
   VT_FLOAT_VEC2 = GL_FLOAT_VEC2,
   VT_FLOAT_VEC3 = GL_FLOAT_VEC3,
   VT_FLOAT_VEC4 = GL_FLOAT_VEC4
 };
 /* Variables of type uniform present inside the shade file*/
-enum Shader_UniformType
+enum Shader_UniformDataType
 {
-  UT_FLOAT_MAT4 = GL_FLOAT_MAT4
+  UT_FLOAT_MAT4 = GL_FLOAT_MAT4,
+  UT_FLOAT_VEC4 = GL_FLOAT_VEC4,
+  UT_FLOAT_VEC3 = GL_FLOAT_VEC3,
+  UT_FLOAT_VEC2 = GL_FLOAT_VEC2
 };
 /*Forward declaration by the application*/
 enum class Shader_Semantic : SG_UINT;
 
-enum Shader_Uniform
-{
-  MVP_Matrix
-};
+enum class Shader_Uniform : SG_UINT;
 
 template <typename variable, typename type>
 class ShaderVariable
@@ -45,8 +45,8 @@ private:
   type _type;
 };
 
-typedef ShaderVariable<Shader_Semantic, Shader_VariableType> ShaderAttribute;
-typedef ShaderVariable<Shader_Uniform, Shader_UniformType> ShaderUniform;
+typedef ShaderVariable<Shader_Semantic, Shader_SemanticDataType> ShaderAttribute;
+typedef ShaderVariable<Shader_Uniform, Shader_UniformDataType> ShaderUniform;
 
 class Shader
 {
@@ -74,7 +74,7 @@ private:
 
     std::string _strName; // ACtual name of the variable inside the shader file
     bool _isVerified;
-    int _dataSize;
+    int _dataSize;			// unique value count per variable , ex : vec4 = 4
 
     VariableInfo(ShaderVariable<variable, type> v, std::string variableName, int size);
   };
@@ -83,8 +83,8 @@ private:
   Shader(const Shader &copy);
   Shader &operator=(const Shader &copy);
 
-  typedef VariableInfo<Shader_Semantic, Shader_VariableType> ShaderAttributeInfo;
-  typedef VariableInfo<Shader_Uniform, Shader_UniformType> ShaderUniformInfo;
+  typedef VariableInfo<Shader_Semantic, Shader_SemanticDataType> ShaderAttributeInfo;
+  typedef VariableInfo<Shader_Uniform, Shader_UniformDataType> ShaderUniformInfo;
   /* Vector list to store all the shader's variable info , will sent to the 
       ShaderManager for storage and verification*/
   typedef std::vector<ShaderAttributeInfo> Vector_ShaderAttributeInfo;
@@ -94,7 +94,7 @@ private:
   {
     return vector_sai;
   }
-  const Vector_ShaderUniformInfo &getVector(const ShaderUniform &uniform)
+  Vector_ShaderUniformInfo &getVector(const ShaderUniform &uniform)
   {
     return vector_sui;
   }
