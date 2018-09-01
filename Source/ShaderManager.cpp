@@ -4,38 +4,38 @@
 
 namespace SGEngine
 {
-SGShaderManager &SGShaderManager::instance()
+SGMaterialManager &SGMaterialManager::instance()
 {
-    static SGShaderManager *_instance = new SGShaderManager();
+    static SGMaterialManager *_instance = new SGMaterialManager();
     return *_instance;
 }
 
-SGShaderManager::AttributeVariable::AttributeVariable(Shader_SemanticDataType etype, SG_UINT uLocation, int size)
+SGMaterialManager::AttributeVariable::AttributeVariable(Shader_SemanticDataType etype, SG_UINT uLocation, int size)
 {
     this->_uLocation = uLocation;
     this->_eType = etype;
     this->_iSize = size;
 }
 
-SGShaderManager::UniformVariable::UniformVariable(Shader_UniformDataType etype, SG_UINT uLocation)
+SGMaterialManager::UniformVariable::UniformVariable(Shader_UniformDataType etype, SG_UINT uLocation)
 {
     this->_uLocation = uLocation;
     this->_eType = etype;
 }
 
-SGShaderManager::ProgramBlob::ProgramBlob()
+SGMaterialManager::ProgramBlob::ProgramBlob()
 {
     this->_uId = glCreateProgram();
     this->_aShaderIndex.empty();
 }
 
-SGShaderManager::ShaderBlob::ShaderBlob(int shadertype, std::string filename)
+SGMaterialManager::ShaderBlob::ShaderBlob(int shadertype, std::string filename)
 {
     this->uId = glCreateShader(shadertype);
     this->strFilename = filename;
 }
 
-SG_UINT SGShaderManager::InitializeShader(const ShaderType &shaderType, const std::string &filename)
+SG_UINT SGMaterialManager::InitializeShader(const ShaderType &shaderType, const std::string &filename)
 {
 #ifdef _DEBUG
 	SGFileWriter logger("BuildLog.txt");
@@ -65,7 +65,7 @@ SG_UINT SGShaderManager::InitializeShader(const ShaderType &shaderType, const st
     {
         if (vector_loadedShader[shader]->strFilename == filename)
         {
-            //Shader already exist , return the index of the loaded shader
+			std::cout << "Shader already exist , return the index of the loaded shader\n";
             return shader;
         }
     }
@@ -100,7 +100,7 @@ SG_UINT SGShaderManager::InitializeShader(const ShaderType &shaderType, const st
     return (vector_loadedShader.size() - 1);
 }
 
-void SGShaderManager::ProcessAttributes(const SG_UINT programID, std::string shaderName, Shader::Vector_ShaderAttributeInfo &vSai, MapAttributes &mAttributes)
+void SGMaterialManager::ProcessAttributes(const SG_UINT programID, std::string shaderName, Shader::Vector_ShaderAttributeInfo &vSai, MapAttributes &mAttributes)
 {
 
 #ifdef _DEBUG
@@ -175,7 +175,7 @@ void SGShaderManager::ProcessAttributes(const SG_UINT programID, std::string sha
     }
 }
 
-void SGShaderManager::ProcessUniforms(const SG_UINT programID, std::string shaderName, Shader::Vector_ShaderUniformInfo &vSui, MapUniforms &mUniforms)
+void SGMaterialManager::ProcessUniforms(const SG_UINT programID, std::string shaderName, Shader::Vector_ShaderUniformInfo &vSui, MapUniforms &mUniforms)
 {
 	int a = 20;
 #ifdef _DEBUG
@@ -225,8 +225,8 @@ void SGShaderManager::ProcessUniforms(const SG_UINT programID, std::string shade
                 std::cout << "Not found shader variable : " << namebuffer;
             }
         }
+		delete namebuffer;
     }
-	delete namebuffer;   // MEMORY LEAK.............!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     // Confirm all the uniforms are verified and map them
     for (const Shader::ShaderUniformInfo &uinfo : vSui)
@@ -242,34 +242,41 @@ void SGShaderManager::ProcessUniforms(const SG_UINT programID, std::string shade
     }
 }
 
-void SGShaderManager::Create(Shader &shader)
+void SGMaterialManager::Create(const long int& material_uuid,Shader &shader)
 {
+	bool _modified = false;
 #ifdef _DEBUG
 	SGFileWriter logger("BuildLog.txt");
 	logger << "Creating Shader"<<std::endl;
 #endif
     SPTR_ProgramBlob programBlob = nullptr;
-    // Check if Shader already has been created
+    // Check if material is linked with a program object -> also contains compiled/linked shader
     try
     {
-        auto it = _map_ProgramBlob.find(shader.shaderProgramName);  // FAULT
+        auto it = _map_ProgramBlob.find(material_uuid); 
         if (it != _map_ProgramBlob.end())
         {
-            std::cout << "Shader Already Created , no need to create\n";
-			return;
-        }else  
-			logger <<"Shader Not Found , Creating Shader\n";
+			_modified = true;
+            std::cout << "Program Object Exist....Detaching shaders\n";
+			//glUseProgram(0);
+			glDetachShader(it->second->_uId, _avShaderBlob[SHADER_VERTEX].at(it->second->_aShaderIndex[SHADER_VERTEX])->uId);
+			glDetachShader(it->second->_uId, _avShaderBlob[SHADER_FRAGMENT].at(it->second->_aShaderIndex[SHADER_FRAGMENT])->uId);
+			programBlob = it->second;
+        }
+		else
+		{
+			std::cout << "Program Object does not Exist :\n";
+			//Create New Program
+			programBlob.reset(new ProgramBlob());
+			if (programBlob->_uId == 0)
+			{
+				std::cout << "glCreateProgram Failed returned 0";
+			}
+		}
     }
     catch (...)
     {
         std::cout << "Exception Occured Shader Creation Failed\n";
-    }
-    std::cout<<"Shader Not Found , Creating Shader\n";
-    //Create New Program
-    programBlob.reset(new ProgramBlob());
-    if (programBlob->_uId == 0)
-    {
-        std::cout << "glCreateProgram Failed returned 0";
     }
 
     programBlob->_aShaderIndex[SHADER_VERTEX] = InitializeShader(SHADER_VERTEX, shader._vertex_shader_file);
@@ -293,14 +300,15 @@ void SGShaderManager::Create(Shader &shader)
     }
 	ProcessAttributes(programBlob->_uId, shader.shaderProgramName, shader.vector_sai, programBlob->_mapAttributes);
     ProcessUniforms(programBlob->_uId, shader.shaderProgramName, shader.vector_sui, programBlob->_mapUniform);
-
-    _map_ProgramBlob.insert(MAP_ProgramBlob::value_type(shader.shaderProgramName, programBlob));
+	
+	if(!_modified)
+		_map_ProgramBlob.insert(MAP_ProgramBlob::value_type(material_uuid, programBlob));
 }
 
-SGShaderManager::~SGShaderManager()
+SGMaterialManager::~SGMaterialManager()
 {
     //disable all shader programs
-    activeShaderProgramName = "";
+    activeProgram = 0;
     if (glUseProgram)
         glUseProgram(0);
 
@@ -343,27 +351,27 @@ SGShaderManager::~SGShaderManager()
     }
 }
 
-void SGShaderManager::EnableProgram(std::string shaderProgramName)
+void SGMaterialManager::EnableProgram(const long int& material_uuid)
 {
     try
     {
-        glUseProgram(_map_ProgramBlob[shaderProgramName]->_uId);
-        activeShaderProgramName = shaderProgramName;
+        glUseProgram(_map_ProgramBlob[material_uuid]->_uId);
+        activeProgram = material_uuid;
     }
     catch (...)
     {
-        std::cout << "Shader Program : " << shaderProgramName << " not found\n";
+        std::cout << "Shader Program : " << material_uuid << " not found\n";
     }
 }
 
-void SGShaderManager::EnableAttribute(Shader_Semantic semantic, SG_UINT strideBytes, SG_UINT offsetBytes, bool normalize) const
+void SGMaterialManager::EnableAttribute(const long int& material_uuid,Shader_Semantic semantic, SG_UINT strideBytes, SG_UINT offsetBytes, bool normalize) const
 {
-    SetVertexAttribute(semantic, reinterpret_cast<const void *const>(0), true, strideBytes, offsetBytes, normalize);
+    SetVertexAttribute(material_uuid,semantic, reinterpret_cast<const void *const>(0), true, strideBytes, offsetBytes, normalize);
 }
 
-void SGShaderManager::DisableAttribute(Shader_Semantic semantic) const
+void SGMaterialManager::DisableAttribute(const long int& material_uuid,Shader_Semantic semantic) const
 {
-    SetVertexAttribute(semantic, reinterpret_cast<const void *const>(0), false, 0, 0, false);
+    SetVertexAttribute(material_uuid,semantic, reinterpret_cast<const void *const>(0), false, 0, 0, false);
 }
 
 	/*	***************************************************************************
@@ -371,7 +379,7 @@ void SGShaderManager::DisableAttribute(Shader_Semantic semantic) const
 		*************************************************************************** */
 
 
-void SGShaderManager::SetVertexAttribute(AttributeVariable attrib, const void *const pVoid, bool bEnable, SG_UINT strideBytes, SG_UINT offsetBytes, bool isNormalized) const
+void SGMaterialManager::SetVertexAttribute(AttributeVariable attrib, const void *const pVoid, bool bEnable, SG_UINT strideBytes, SG_UINT offsetBytes, bool isNormalized) const
 {
 	try {
 		if (bEnable)
@@ -391,7 +399,7 @@ void SGShaderManager::SetVertexAttribute(AttributeVariable attrib, const void *c
     
 }
 
-void SGShaderManager::SetUniform(const SGShaderManager::UniformVariable uniform_var, glm::mat4 &m4Matrix) const
+void SGMaterialManager::SetUniform(const SGMaterialManager::UniformVariable uniform_var, glm::mat4 &m4Matrix) const
 {
     try
     {
@@ -411,7 +419,7 @@ void SGShaderManager::SetUniform(const SGShaderManager::UniformVariable uniform_
     }
 }
 
-void SGShaderManager::SetUniform(const UniformVariable uniform_var,const SGVector4& mValue) const
+void SGMaterialManager::SetUniform(const UniformVariable uniform_var,const SGVector4& mValue) const
 {
 	try
 	{
@@ -431,7 +439,7 @@ void SGShaderManager::SetUniform(const UniformVariable uniform_var,const SGVecto
 	}
 }
 
-void SGShaderManager::SetUniform(const UniformVariable uniform_var,const SGVector3& mValue) const
+void SGMaterialManager::SetUniform(const UniformVariable uniform_var,const SGVector3& mValue) const
 {
 	try
 	{
@@ -451,7 +459,7 @@ void SGShaderManager::SetUniform(const UniformVariable uniform_var,const SGVecto
 	}
 }
 
-void SGShaderManager::SetUniform(const UniformVariable uniform_var,const SGVector2& mValue) const
+void SGMaterialManager::SetUniform(const UniformVariable uniform_var,const SGVector2& mValue) const
 {
 	try
 	{

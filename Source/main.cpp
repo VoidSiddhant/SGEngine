@@ -40,16 +40,17 @@ class Application : public SGCore
         simpleShader = SG_MAKEPTRS<Shader>("Simple", "./Shader/vertex.vs", "./Shader/color.frag");
         simpleShader->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_POSTION, VT_FLOAT_VEC3), "lPos", 3);
         simpleShader->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_COLOR, VT_FLOAT_VEC4), "color", 4);
-		SG_PTRS<SGMaterial> mat1 = SG_MAKEPTRS<SGMaterial>();
-		mat1->SetShader(simpleShader);
+
+		mat1 = SG_MAKEPTRS<SGMaterial>("Material1");
 
 		//Uniform_Shader
 		uniform_shader = SG_MAKEPTRS<Shader>("Uniform_shader", "./Shader/vertex.vs", "./Shader/color_uniform.frag");
 		uniform_shader->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_POSTION, VT_FLOAT_VEC3), "lPos", 3);
 		uniform_shader->AddVariable(ShaderUniform(Shader_Uniform::VEC4_COLOR, UT_FLOAT_VEC4), "inColor", 4);
-		SG_PTRS<SGMaterial> mat2 = SG_MAKEPTRS<SGMaterial>();
+		
+		mat2 = SG_MAKEPTRS<SGMaterial>("Material2");
 		mat2->SetShader(uniform_shader);
-
+		mat1->SetShader(uniform_shader);
 		//Triangle GameObject
 		SGShapes::instance().Triangle2D(SGVector4(1.0f, 0.0f, 0.0f, 1.0f), m);
 		triangle = new SGGameObject(SGVector3(0.0f, 0.0f, 0.0f), SGVector3(0.0f, 0.0f, 0.0f), "Triangle");
@@ -68,8 +69,14 @@ class Application : public SGCore
     {
         float greenValue = (sin(SGTimer::instance().GetTotalTime()) / 2.0f) + 0.5f;
 		SGVector4 color{ 0.0f,greenValue,0.0f,1.0f };
-		SGShaderManager::instance().EnableProgram("Uniform_shader");
-		SGShaderManager::instance().SetUniform(Shader_Uniform::VEC4_COLOR, color);
+		SGMaterialManager::instance().SetUniform(mat2->GetUUID(),Shader_Uniform::VEC4_COLOR, color);
+
+		if (Input::instance().GetKeyDown(GLFW_KEY_SPACE))
+		{
+			mat1->SetShader(simpleShader);
+			SGMeshRenderer* r = static_cast<SGMeshRenderer*>(triangle->GetComponent("Component_MeshRenderer"));
+			r->UpdateMaterial();
+		}
     }
 
     void Render()
@@ -99,6 +106,8 @@ class Application : public SGCore
 
   private:
     SG_PTRS<Shader> simpleShader , uniform_shader;
+	SG_PTRS<SGMaterial> mat1;
+	SG_PTRS<SGMaterial> mat2;
     SGGameObject *triangle, *square;
 
     Application()

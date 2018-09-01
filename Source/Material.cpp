@@ -1,11 +1,14 @@
 #include "Material.h"
 #include "ShaderManager.h"
 #include "Mesh.h"
+#include "UUIDGenerator.h"
 
 namespace SGEngine
 {
-	SGMaterial::SGMaterial()
+	SGMaterial::SGMaterial(std::string material_name)
 	{
+		name = material_name;
+		SGUUIDGenerator::instance().Create(uuid);
 		activeShader = nullptr;
 	}
 
@@ -27,20 +30,20 @@ namespace SGEngine
 	void SGMaterial::Initialize() const
 	{
 		// Generate Shader data
-		SGShaderManager::instance().Create(*activeShader);
+		SGMaterialManager::instance().Create(uuid,*activeShader);
 		// Set Active shader program , to reflect any changes
-		SGShaderManager::instance().EnableProgram(activeShader->shaderProgramName);
+//		SGMaterialManager::instance().EnableProgram(activeShader->shaderProgramName);
 	}
 
 	void SGMaterial::BuildVAO(const SG_UINT& vao) const
 	{
-		SGShaderManager::instance().EnableProgram(activeShader->shaderProgramName);
+//		SGMaterialManager::instance().EnableProgram(activeShader->shaderProgramName);
 		this->BindVAO(vao);
 		SG_UINT offsetBytes = 0;
 		for (Shader::ShaderAttributeInfo attribInfo : activeShader->vector_sai)
 		{
 			offsetBytes = static_cast<SG_UINT>(attribInfo._shaderVariable._variable) * sizeof(SGVector3);
-			SGShaderManager::instance().EnableAttribute(attribInfo._shaderVariable._variable
+			SGMaterialManager::instance().EnableAttribute(uuid,attribInfo._shaderVariable._variable
 				, sizeof(SGVertex), offsetBytes, false);
 		}
 		this->UnBindVAO();
@@ -49,6 +52,7 @@ namespace SGEngine
 	void SGMaterial::SetShader(SG_PTRS<Shader> const shader)
 	{
 		activeShader = shader;
+		std::cout << "Material name : " << name << " id : " << uuid << "Active Shader : "<<activeShader->shaderProgramName <<std::endl;
 		this->Initialize();
 	}
 }

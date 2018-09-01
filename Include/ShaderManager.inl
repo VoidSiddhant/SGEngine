@@ -1,9 +1,9 @@
 template <typename T>
-void SGShaderManager::SetVertexAttribute(Shader_Semantic semantic, const T *const pParam, bool bEnable, SG_UINT strideBytes, SG_UINT offsetBytes, bool normalize) const
+void SGMaterialManager::SetVertexAttribute(const long int& material_uuid,Shader_Semantic semantic, const T *const pParam, bool bEnable, SG_UINT strideBytes, SG_UINT offsetBytes, bool normalize) const
 {
   try
   {
-    SPTR_ProgramBlob shared_programBlob = _map_ProgramBlob.at(activeShaderProgramName);
+    SPTR_ProgramBlob shared_programBlob = _map_ProgramBlob.at(material_uuid);
     MapAttributes::const_iterator it = shared_programBlob->_mapAttributes.find(semantic);
     if (it == shared_programBlob->_mapAttributes.end())
     {
@@ -25,12 +25,12 @@ void SGShaderManager::SetVertexAttribute(Shader_Semantic semantic, const T *cons
 }
 
 template<typename t_value_type>
-void SGShaderManager::SetUniform(const Shader_Uniform uniform_name,const t_value_type& t_data_type) const
+void SGMaterialManager::SetUniform(const long int& material_uuid,const Shader_Uniform uniform_name,const t_value_type& t_data_type) const
 {
 	// Check if this unifrom_name exist in the current loaded shader
 	try
 	{
-		SPTR_ProgramBlob shared_program = _map_ProgramBlob.at(activeShaderProgramName);
+		SPTR_ProgramBlob shared_program = _map_ProgramBlob.at(material_uuid);
 		MapUniforms::const_iterator it = shared_program->_mapUniform.find(uniform_name);
 
 		if (it == shared_program->_mapUniform.end())
@@ -39,7 +39,9 @@ void SGShaderManager::SetUniform(const Shader_Uniform uniform_name,const t_value
 		}
 		else
 		{
+			glUseProgram(shared_program->_uId);
 			this->SetUniform(it->second, t_data_type);
+			glUseProgram(activeProgram);
 		}
 	}
 	catch (...)

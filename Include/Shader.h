@@ -30,7 +30,7 @@ enum class Shader_Uniform : SG_UINT;
 template <typename variable, typename type>
 class ShaderVariable
 {
-  friend class SGShaderManager;
+  friend class SGMaterialManager;
   friend class SGMaterial;
 public:
   ShaderVariable();
@@ -50,7 +50,7 @@ typedef ShaderVariable<Shader_Uniform, Shader_UniformDataType> ShaderUniform;
 
 class Shader
 {
-  friend class SGShaderManager;
+  friend class SGMaterialManager;
   friend class SGMaterial;
 
 public:

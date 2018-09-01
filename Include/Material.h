@@ -10,7 +10,7 @@ namespace SGEngine
 	class SGMaterial
 	{
 	public:
-		SGMaterial();
+		SGMaterial(std::string material_name);
 		~SGMaterial();
 
 		void SetShader(SG_PTRS<Shader>const shader);
@@ -22,10 +22,16 @@ namespace SGEngine
 		void BindVAO(const SG_UINT& vao) const;
 		void UnBindVAO() const;
 
-	private:
+		const long int& GetUUID() const {
+			return uuid;
+		}
 
+	private:
+		SGMaterial() {}
 		void Initialize() const;
 		SG_PTRS<Shader> activeShader;
+		long int uuid;
+		std::string name;
 	};
 };
 

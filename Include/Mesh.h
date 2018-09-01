@@ -57,7 +57,7 @@ namespace SGEngine
 		}
 
 		void SetMaterial(SGMaterial* const mat) {}
-
+		void UpdateMaterial();
 		//SGMaterial* GetMaterial() {
 		//	return material;
 	//	}

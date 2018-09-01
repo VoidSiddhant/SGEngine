@@ -23,6 +23,17 @@ namespace SGEngine
 		indexCount = count;
 	}
 
+	void SGMeshRenderer::UpdateMaterial()
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+
+		material->BuildVAO(vao);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+
 	SGMeshRenderer::SGMeshRenderer(SGMeshFilter mesh_copy,SG_PTRS<SGMaterial> mat)
 	{
 		material = mat;
@@ -50,7 +61,7 @@ namespace SGEngine
 
 	void SGMeshRenderer::Render()
 	{
-		SGShaderManager::instance().EnableProgram(material->GetShaderName());
+		SGMaterialManager::instance().EnableProgram(material->GetUUID());
 		material->BindVAO(vao);
 	}
 
