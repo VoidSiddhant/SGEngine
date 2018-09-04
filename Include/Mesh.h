@@ -52,23 +52,26 @@ namespace SGEngine
 		explicit SGMeshRenderer(SGMeshFilter mesh_copy,SG_PTRS<SGMaterial> material);
 		~SGMeshRenderer();
 
+		void SetMesh(const SGMeshFilter mesh_copy);
+		const PMesh GetMesh() {
+			return &mesh;
+		}
+
+		/*****************************************************************/
+		/****************	Virtual Override  ****************************/
+		/*****************************************************************/
+		
 		const type_ID GetMemberID() const {
 			return type_ID("Component_MeshRenderer");
 		}
 
-		void SetMaterial(SGMaterial* const mat) {}
-		void UpdateMaterial();
-		//SGMaterial* GetMaterial() {
-		//	return material;
-	//	}
-
-		void AddMesh(const SGMeshFilter mesh_copy);
-		PMesh GetMesh() {
-			return &mesh;
-		}
-
 		void Update() {}   // TRICKY
 		void Render();
+		void UpdateMaterial();
+		void SetMaterial(SG_PTRS<SGMaterial> const new_mat);
+		SG_PTRS<SGMaterial> GetMaterial() const {
+			return material;
+		}
 
 	private:
 		SGMeshFilter mesh;

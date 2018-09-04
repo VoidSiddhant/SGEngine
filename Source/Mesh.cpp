@@ -23,6 +23,12 @@ namespace SGEngine
 		indexCount = count;
 	}
 
+	void SGMeshRenderer::SetMaterial(SG_PTRS<SGMaterial> const new_mat)
+	{
+		material = new_mat;
+		this->UpdateMaterial();
+	}
+
 	void SGMeshRenderer::UpdateMaterial()
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -61,11 +67,13 @@ namespace SGEngine
 
 	void SGMeshRenderer::Render()
 	{
-		SGMaterialManager::instance().EnableProgram(material->GetUUID());
-		material->BindVAO(vao);
+		material->RenderBegin(vao);                                 // Configure GPU device for this material
+		int indexCount = mesh.index_list.size();
+		glDrawElements(GL_TRIANGLES,indexCount, GL_UNSIGNED_INT, 0);
+		material->RenderEnd();										// Free device configuration
 	}
 
-	void SGMeshRenderer::AddMesh(const SGMeshFilter mesh_copy)
+	void SGMeshRenderer::SetMesh(const SGMeshFilter mesh_copy)
 	{
 		mesh = mesh_copy;
 	}

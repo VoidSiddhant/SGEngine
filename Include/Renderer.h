@@ -15,6 +15,10 @@ namespace SGEngine
 			return std::string("Component_Render");
 		}
 
+		 virtual void UpdateMaterial() = 0;
+		 virtual void SetMaterial(SG_PTRS<SGMaterial> const new_mat) = 0;
+		 virtual SG_PTRS<SGMaterial> GetMaterial() const = 0;
+
 		virtual void Render() = 0;
 
 		virtual ~SGRenderer() {}

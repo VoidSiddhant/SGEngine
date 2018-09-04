@@ -20,7 +20,9 @@ enum Shader_UniformDataType
   UT_FLOAT_MAT4 = GL_FLOAT_MAT4,
   UT_FLOAT_VEC4 = GL_FLOAT_VEC4,
   UT_FLOAT_VEC3 = GL_FLOAT_VEC3,
-  UT_FLOAT_VEC2 = GL_FLOAT_VEC2
+  UT_FLOAT_VEC2 = GL_FLOAT_VEC2,
+  UT_SAMPLER2D = GL_SAMPLER_2D,
+  UT_BOOL = GL_BOOL
 };
 /*Forward declaration by the application*/
 enum class Shader_Semantic : SG_UINT;

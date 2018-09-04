@@ -2,6 +2,7 @@
 #include "ShaderManager.h"
 #include "Mesh.h"
 #include "UUIDGenerator.h"
+#include "TextureManager.h"
 
 namespace SGEngine
 {
@@ -22,29 +23,40 @@ namespace SGEngine
 		glBindVertexArray(vao);
 	}
 
+	void SGMaterial::BindTexture()
+	{
+		auto it = _map_textures.begin();
+
+		for( ; it!= _map_textures.end(); it++)
+		{
+			bool success = SGTextureManager::instance().BindTexture(it->second, it->first);
+			if (!success)
+			{
+				std::cout << "Create the Texture before binding : " << uuid << std::endl << it->second;
+			}
+		}
+
+	}
+
 	void SGMaterial::UnBindVAO() const
 	{
 		glBindVertexArray(0);
 	}
 
-	void SGMaterial::Initialize() const
-	{
-		// Generate Shader data
-		SGMaterialManager::instance().Create(uuid,*activeShader);
-		// Set Active shader program , to reflect any changes
-//		SGMaterialManager::instance().EnableProgram(activeShader->shaderProgramName);
-	}
-
 	void SGMaterial::BuildVAO(const SG_UINT& vao) const
 	{
-//		SGMaterialManager::instance().EnableProgram(activeShader->shaderProgramName);
 		this->BindVAO(vao);
 		SG_UINT offsetBytes = 0;
+		SG_UINT prevDataSize = 0;
 		for (Shader::ShaderAttributeInfo attribInfo : activeShader->vector_sai)
 		{
-			offsetBytes = static_cast<SG_UINT>(attribInfo._shaderVariable._variable) * sizeof(SGVector3);
+			offsetBytes =  prevDataSize  * sizeof(float);
+			std::cout << "**********************************************************************\n";
+			std::cout << attribInfo._strName <<" : "<<offsetBytes << " : " << sizeof(SGVertex) <<"\n";
+			std::cout << "**********************************************************************\n";
 			SGMaterialManager::instance().EnableAttribute(uuid,attribInfo._shaderVariable._variable
 				, sizeof(SGVertex), offsetBytes, false);
+			prevDataSize += attribInfo._dataSize;
 		}
 		this->UnBindVAO();
 	}
@@ -53,6 +65,25 @@ namespace SGEngine
 	{
 		activeShader = shader;
 		std::cout << "Material name : " << name << " id : " << uuid << "Active Shader : "<<activeShader->shaderProgramName <<std::endl;
-		this->Initialize();
+		// Generate Shader data
+		SGMaterialManager::instance().Create(uuid, *activeShader);
+	}
+
+	void SGMaterial::SetTexture(const char* name , const SG_UCHAR index)
+	{
+		_map_textures.insert(std::pair<SG_UCHAR, const char*>(index , name));
+	}
+
+	void SGMaterial::RenderBegin(const SG_UINT& vao)
+	{
+		SGMaterialManager::instance().EnableProgram(this->GetUUID());
+		this->BindTexture();
+		this->BindVAO(vao);
+	}
+
+	void SGMaterial::RenderEnd()
+	{
+		this->UnBindVAO();
+		this->BindTexture();
 	}
 }

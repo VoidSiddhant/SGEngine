@@ -10,7 +10,8 @@ void SGMaterialManager::SetVertexAttribute(const long int& material_uuid,Shader_
       std::cout << "Attribute location not found \n";
     }
     if (!(it->second._eType == VT_FLOAT_VEC3 ||
-          it->second._eType == VT_FLOAT_VEC4))
+          it->second._eType == VT_FLOAT_VEC4 ||
+		  it->second._eType == VT_FLOAT_VEC2 ))
     {
       std::cout << "Invalid type , Check Shader_VariableTypes for the supported shader data types\n";
     }
@@ -25,7 +26,7 @@ void SGMaterialManager::SetVertexAttribute(const long int& material_uuid,Shader_
 }
 
 template<typename t_value_type>
-void SGMaterialManager::SetUniform(const long int& material_uuid,const Shader_Uniform uniform_name,const t_value_type& t_data_type) const
+void SGMaterialManager::SetUniform(const long int& material_uuid,const Shader_Uniform uniform_name,const t_value_type& t_data_type)
 {
 	// Check if this unifrom_name exist in the current loaded shader
 	try
@@ -41,7 +42,6 @@ void SGMaterialManager::SetUniform(const long int& material_uuid,const Shader_Un
 		{
 			glUseProgram(shared_program->_uId);
 			this->SetUniform(it->second, t_data_type);
-			glUseProgram(activeProgram);
 		}
 	}
 	catch (...)

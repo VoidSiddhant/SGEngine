@@ -2,9 +2,6 @@
 #define _SHADER_MANAGER_H
 
 #include "SGUtil.h"
-#include <map>
-#include <memory>
-#include <unordered_map>
 #include "Shader.h"
 #include "Vector.h"
 
@@ -12,6 +9,7 @@ namespace SGEngine
 {
 class SGMaterialManager
 {
+	friend class SGMaterial;
 private:
   enum ShaderType
   {
@@ -69,21 +67,23 @@ private:
   typedef std::vector<SPTR_ShaderBlob> VECTOR_ShaderBlob;
 
 public:
-  static SGMaterialManager &instance();
-  void Create(const long int& material_uuid,Shader &shader);
-  void EnableProgram(const long int& material_uuid);
-  void EnableAttribute(const long int& material_uuid,Shader_Semantic semantic_name, SG_UINT strideBytes = 0, SG_UINT offsetBytes = 0, bool normalize = false) const;
-  void DisableAttribute(const long int& material_uuid,Shader_Semantic semantic_name) const;
-  template<typename t_value_type>
-  void SetUniform(const long int& material_uuid,const Shader_Uniform uniform_name,const t_value_type& t_data) const;
 
   ~SGMaterialManager();
 
 private:
   SGMaterialManager() {}
 
-  SGMaterialManager &ShaderManager(const SGMaterialManager &obj);
+  SGMaterialManager(const SGMaterialManager &obj);
   SGMaterialManager &operator=(const SGMaterialManager &c);
+
+  static SGMaterialManager &instance();
+  void Create(const long int& material_uuid, Shader &shader);
+  void EnableProgram(const long int& material_uuid);
+  void EnableAttribute(const long int& material_uuid, Shader_Semantic semantic_name, SG_UINT strideBytes = 0, SG_UINT offsetBytes = 0, bool normalize = false) const;
+  void DisableAttribute(const long int& material_uuid, Shader_Semantic semantic_name) const;
+  template<typename t_value_type>
+  void SetUniform(const long int& material_uuid, const Shader_Uniform uniform_name, const t_value_type& t_data);
+  void SetUniform(const long int& material_uuid, const char* uniform_name, const int& value);
   
   //Functions
   SG_UINT InitializeShader(const ShaderType &shaderType, const std::string &filename);
@@ -95,9 +95,10 @@ private:
   void SetUniform(const UniformVariable uniform,  glm::mat4 &matrix) const;
   void SetUniform(const UniformVariable uniform,const SGVector4 &value) const;
   void SetUniform(const UniformVariable uniform,const SGVector3 &value) const;
-  void SetUniform(const UniformVariable uniform,const SGVector2 &value) const;
+  void SetUniform(const UniformVariable uniform, const SGVector2 &value) const;
+  void SetUniform(const UniformVariable uniform,const int &value) const;
   //Data
-  long int activeProgram;
+  long int activeMaterial;
 
   /* Loaded Program Objects stored as map<shader.name,ProgramBlob> 
   * Contains programID

@@ -8,6 +8,9 @@
 #include <fstream>
 #include <vector>
 #include <array>
+#include <unordered_map>
+#include <map>
+#include <memory>
 
 //Error Codes
 #define SG_UTIL_ERROR_CRITICAL 1
@@ -24,6 +27,7 @@
 
 #define SG_INT64 int64_t
 #define SG_UINT unsigned int
+#define SG_UCHAR unsigned char
 #define SG_INLINE inline
 #define SG_PTRS std::shared_ptr
 #define SG_PTRU std::unique_ptr

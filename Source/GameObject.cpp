@@ -37,7 +37,6 @@ void SGGameObject::AddComponent(SGComponent* component)
 	else
 	{
 #ifdef _DEBUG
-		SGFileWriter logger("BuildLog.txt");
 		logger << "Component Already Exist : " << name << std::endl;
 #endif // _DEBUG
 	}

@@ -225,9 +225,8 @@ void SGMaterialManager::ProcessUniforms(const SG_UINT programID, std::string sha
                 std::cout << "Not found shader variable : " << namebuffer;
             }
         }
-		delete namebuffer;
     }
-
+	delete namebuffer;
     // Confirm all the uniforms are verified and map them
     for (const Shader::ShaderUniformInfo &uinfo : vSui)
     {
@@ -308,7 +307,7 @@ void SGMaterialManager::Create(const long int& material_uuid,Shader &shader)
 SGMaterialManager::~SGMaterialManager()
 {
     //disable all shader programs
-    activeProgram = 0;
+    activeMaterial = 0;
     if (glUseProgram)
         glUseProgram(0);
 
@@ -354,9 +353,9 @@ SGMaterialManager::~SGMaterialManager()
 void SGMaterialManager::EnableProgram(const long int& material_uuid)
 {
     try
-    {
+	{
         glUseProgram(_map_ProgramBlob[material_uuid]->_uId);
-        activeProgram = material_uuid;
+		activeMaterial = material_uuid;
     }
     catch (...)
     {
@@ -427,7 +426,6 @@ void SGMaterialManager::SetUniform(const UniformVariable uniform_var,const SGVec
 		{
 			std::cout << "Fail to set , uniform type mis match\n";
 		}
-
 		//set the matrix values
 		glUniform4fv(uniform_var._uLocation, 1, reinterpret_cast<const float*>(&mValue.vector));
 	}
@@ -443,7 +441,7 @@ void SGMaterialManager::SetUniform(const UniformVariable uniform_var,const SGVec
 {
 	try
 	{
-		if (!(uniform_var._eType == UT_FLOAT_VEC4))
+		if (!(uniform_var._eType == UT_FLOAT_VEC3))
 		{
 			std::cout << "Fail to set , uniform type mis match\n";
 		}
@@ -463,13 +461,32 @@ void SGMaterialManager::SetUniform(const UniformVariable uniform_var,const SGVec
 {
 	try
 	{
-		if (!(uniform_var._eType == UT_FLOAT_VEC4))
+		if (!(uniform_var._eType == UT_FLOAT_VEC2))
 		{
 			std::cout << "Fail to set , uniform type mis match\n";
 		}
 
 		//set the matrix values
 		glUniform2fv(uniform_var._uLocation, 1, reinterpret_cast<const float*>(&mValue.vector));
+	}
+	catch (...)
+	{
+		std::cout << "Failed to Set Uniform , check for :\n";
+		std::cout << "Did program create?\n";
+		std::cout << "Check Active program name\n";
+	}
+}
+
+void SGMaterialManager::SetUniform(const UniformVariable uniform_var, const int& mValue) const
+{
+	try
+	{
+		if (!(uniform_var._eType == UT_SAMPLER2D || uniform_var._eType == UT_BOOL))
+		{
+			std::cout << "Fail to set , uniform type mis match\n";
+		}
+		std::cout << "////////////////////// : << " << uniform_var._uLocation <<" : " << mValue;
+		glUniform1i(uniform_var._uLocation,mValue);
 	}
 	catch (...)
 	{
