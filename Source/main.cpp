@@ -1,10 +1,13 @@
+#include "SGUtil.h"
 #include "Core.h"
 #include "Input.h"
 #include "Timer.h"
 #include "Vector.h"
+#include "Camera.h"
 #include "PrimitiveShapes.h"
 #include "GameObject.h"
 #include "TextureManager.h"
+#include "External/glm/gtc/type_ptr.hpp"
 
 using namespace SGEngine;
 // Forward declaration
@@ -38,6 +41,13 @@ class Application : public SGCore
 
     void Start()
     {
+		/******************************************************************************************************
+		******************	CAMERA SETUP	***********************************************************
+		*****************************************************************************************************/
+		camera = SG_MAKEPTRS<SGCamera>(SGVector3(0.0f, 0.0f,5.0f) , SGVector3(0.0f,0.0f,0.0f));
+		camera->UpdateProjection();
+		camera->UpdateView();
+
 		SGMeshFilter m, s;
 		/****************************************************************************************************************
 		******************************	SHADER SETUP ********************************************************************
@@ -49,12 +59,15 @@ class Application : public SGCore
 		//Uniform_Shader
 		uniform_shader = SG_MAKEPTRS<Shader>("Uniform_shader", "./Shader/vertex.vs", "./Shader/color_uniform.frag");
 		uniform_shader->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_POSTION, VT_FLOAT_VEC3), "lPos", 3);
-		uniform_shader->AddVariable(ShaderUniform(Shader_Uniform::VEC4_COLOR, UT_FLOAT_VEC4), "inColor", 4);
+		uniform_shader->AddVariable(ShaderUniform(Shader_Uniform::VEC4_COLOR, UT_FLOAT_VEC4), "inColor", 0);
 		//Textured Shader
 		texturedShader = SG_MAKEPTRS<Shader>("Textured", "./Shader/vertex_textured.vs", "./Shader/color_texture.frag");
 		texturedShader->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_POSTION, VT_FLOAT_VEC3), "lPos", 3);
 		texturedShader->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_COLOR, VT_FLOAT_VEC4), "color", 4);
 		texturedShader->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_TEXCOORD, VT_FLOAT_VEC2), "texCoord", 2);
+		texturedShader->AddVariable(ShaderUniform(Shader_Uniform::MATRIX_MVP, UT_FLOAT_MAT4), "WVP", 1);
+		//texturedShader->AddVariable(ShaderUniform(Shader_Uniform::Matrix_V, UT_FLOAT_MAT4), "view", 1);
+		//texturedShader->AddVariable(ShaderUniform(Shader_Uniform::Matrix_P, UT_FLOAT_MAT4), "proj", 1);
 		texturedShader->AddVariable(ShaderUniform(Shader_Uniform::SAMPLE_TEX0, UT_SAMPLER2D), "sample_tex0", 1);
 		texturedShader->AddVariable(ShaderUniform(Shader_Uniform::SAMPLE_TEX1, UT_SAMPLER2D), "sample_tex1" , 1);
 		texturedShader->AddVariable(ShaderUniform(Shader_Uniform::USE_TEX, UT_BOOL), "useTex" , 1);
@@ -62,10 +75,7 @@ class Application : public SGCore
 		******************************	Material SETUP ********************************************************************
 		*****************************************************************************************************************/
 		SGTexture wood_text("WoodTexture","./Textures/container.jpg");
-		SGTextureManager::instance().GenerateTexture(wood_text, false);
-		
 		SGTexture cont_text("ContainerTexture", "./Textures/crate.jpg");
-		SGTextureManager::instance().GenerateTexture(cont_text, false);
 		
 		mat1 = SG_MAKEPTRS<SGMaterial>("Material1");
 		mat1->SetShader(texturedShader);
@@ -74,18 +84,18 @@ class Application : public SGCore
 		//*************			Texture Blending			      ********
 		mat1->SetUniform(Shader_Uniform::SAMPLE_TEX0, 0);       //********
 		mat1->SetUniform(Shader_Uniform::SAMPLE_TEX1, 1);		//********
-		//****************************************************************
 		mat1->SetUniform(Shader_Uniform::USE_TEX, 1);
+     	//****************************************************************
 		mat2 = SG_MAKEPTRS<SGMaterial>("Material2");
 		mat2->SetShader(uniform_shader);
-
+	
 		/****************************************************************************************************************
 		******************************	GameObject SETUP ********************************************************************
 		*****************************************************************************************************************/
 
 		//Triangle GameObject
-		SGShapes::instance().Triangle2D(SGVector4(1.0f, 1.0f, 1.0f, 1.0f), m);
-		triangle = new SGGameObject(SGVector3(0.0f, 0.0f, 0.0f), SGVector3(0.0f, 0.0f, 0.0f), "Triangle");
+		SGShapes::instance().Cube(SGVector4(1.0f, 1.0f, 1.0f, 1.0f), m);
+		triangle = new SGGameObject(SGVector3(0.0f, 0.0f, 0.0f), SGVector3(1.0f, 1.0f, 1.0f), "Triangle");
 		SGComponent* triangleRender = new SGMeshRenderer(m,mat1);
 		triangle->AddComponent(triangleRender);
 		//Square GameObject
@@ -97,9 +107,19 @@ class Application : public SGCore
 
     void Update(float dt)
     {
+
         float greenValue = (sin(SGTimer::instance().GetTotalTime()) / 2.0f) + 0.5f;
 		SGVector4 color{ 0.0f,greenValue,0.0f,1.0f };
 		mat2->SetUniform(Shader_Uniform::VEC4_COLOR, color);
+		
+		if(Input::instance().GetKey(GLFW_KEY_D))
+			triangle->transform.Rotate(SGVector3(0.0f, 10.0f * dt, 0.0f));
+		else if(Input::instance().GetKey(GLFW_KEY_A))
+			triangle->transform.Rotate(SGVector3(0.0f, -10.0f * dt, 0.0f));
+		
+		mat1->SetUniform(Shader_Uniform::MATRIX_MVP, *camera * triangle->transform);
+		//mat1->SetUniform(Shader_Uniform::Matrix_V, v);
+		//mat1->SetUniform(Shader_Uniform::Matrix_P, p);
 
 		if (Input::instance().GetKeyDown(GLFW_KEY_SPACE))
 		{
@@ -112,10 +132,11 @@ class Application : public SGCore
     void Render()
     {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		//SQUARE
-		square->Render();
+		//square->Render();
 		//TRIANGLE
         triangle->Render();
         
@@ -133,10 +154,11 @@ class Application : public SGCore
 
   private:
     SG_PTRS<Shader> simpleShader , uniform_shader , texturedShader;
+	SG_PTRS<SGCamera> camera;
 	SG_PTRS<SGMaterial> mat1;
 	SG_PTRS<SGMaterial> mat2;
     SGGameObject *triangle, *square;
-
+	float rotSpeed = 8.0f;
     Application()
     {
     }

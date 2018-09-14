@@ -220,11 +220,11 @@ void SGMaterialManager::ProcessUniforms(const SG_UINT programID, std::string sha
                     it->_isVerified = true;
                 }
             }
-            if (!bFound)
-            {
-                std::cout << "Not found shader variable : " << namebuffer;
-            }
         }
+		if (!bFound)
+		{
+			std::cout << "Not found shader variable : " << namebuffer;
+		}
     }
 	delete namebuffer;
     // Confirm all the uniforms are verified and map them
@@ -398,7 +398,7 @@ void SGMaterialManager::SetVertexAttribute(AttributeVariable attrib, const void 
     
 }
 
-void SGMaterialManager::SetUniform(const SGMaterialManager::UniformVariable uniform_var, glm::mat4 &m4Matrix) const
+void SGMaterialManager::SetUniform(const SGMaterialManager::UniformVariable uniform_var,const glm::mat4 &m4Matrix) const
 {
     try
     {
@@ -408,7 +408,7 @@ void SGMaterialManager::SetUniform(const SGMaterialManager::UniformVariable unif
         }
 
         //set the matrix values
-        glUniformMatrix4fv(uniform_var._uLocation, 1, false, &m4Matrix[0][0]);
+        glUniformMatrix4fv(uniform_var._uLocation, 1, false,glm::value_ptr(m4Matrix));
     }
     catch (...)
     {
@@ -427,7 +427,7 @@ void SGMaterialManager::SetUniform(const UniformVariable uniform_var,const SGVec
 			std::cout << "Fail to set , uniform type mis match\n";
 		}
 		//set the matrix values
-		glUniform4fv(uniform_var._uLocation, 1, reinterpret_cast<const float*>(&mValue.vector));
+		glUniform4fv(uniform_var._uLocation, 1, reinterpret_cast<const float*>(&mValue));
 	}
 	catch (...)
 	{
@@ -447,7 +447,7 @@ void SGMaterialManager::SetUniform(const UniformVariable uniform_var,const SGVec
 		}
 
 		//set the matrix values
-		glUniform3fv(uniform_var._uLocation, 1, reinterpret_cast<const float*>(&mValue.vector));
+		glUniform3fv(uniform_var._uLocation, 1, reinterpret_cast<const float*>(&mValue));
 	}
 	catch (...)
 	{
@@ -467,7 +467,7 @@ void SGMaterialManager::SetUniform(const UniformVariable uniform_var,const SGVec
 		}
 
 		//set the matrix values
-		glUniform2fv(uniform_var._uLocation, 1, reinterpret_cast<const float*>(&mValue.vector));
+		glUniform2fv(uniform_var._uLocation, 1, reinterpret_cast<const float*>(&mValue));
 	}
 	catch (...)
 	{

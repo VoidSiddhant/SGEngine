@@ -1,11 +1,17 @@
-#include "Vector.h"
 
-namespace SGEngine
+/*****************************************************************************************
+************************** Possible Unecesarry Stuff ************************************
+*****************************************************************************************/
+
+
+//#include "Vector.h"
+
+/*namespace SGEngine
 {
 
 SGVector2::SGVector2()
 {
-    vector = {0.0f, 0.0f};
+	vector = { 0.0f, 0.0f };
 }
 
 SGVector2::SGVector2(const float &x, const float &y)
@@ -33,4 +39,4 @@ SGVector4::SGVector4(const float &x, const float &y, const float &z, const float
     vector = {x, y, z, w};
 }
 
-} // namespace SGEngine
+} // namespace SGEngine*/

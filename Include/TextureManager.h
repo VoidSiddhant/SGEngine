@@ -23,7 +23,6 @@ namespace SGEngine
 	class SGTexture
 	{
 		friend class SGTextureManager;
-
 	public:
 		struct PConfig
 		{
@@ -33,9 +32,9 @@ namespace SGEngine
 		};
 
 	public:
-		SGTexture(const char* texturename,const char* filename, const PConfig& config);
-		SGTexture(const char* texturename , const char* filename);
-		void SetParameters(const PConfig& config);
+		SGTexture(const char* texturename,const char* filename, const PConfig& config ,const bool& mipMap = false);
+		SGTexture(const char* texturename , const char* filename , const bool& mipMap = false);
+		void SetParameters(const PConfig& config);   // NEED TO RE - GENERATE TEXTURES HERE!!!
 		~SGTexture();
 
 	private:
@@ -46,14 +45,18 @@ namespace SGEngine
 
     class SGTextureManager
     {
-        public:
-        static SGTextureManager& instance();
-        void GenerateTexture(const SGTexture& textureObject,const bool& EnableMipMapLevels= false);
-		bool BindTexture(const char* map_name , const SG_UCHAR index);
-		void UnBindTexture();
+		friend class SGTexture;
+		friend class SGMaterial;
+
         private:
 			SGTextureManager(){}
         ~SGTextureManager(){}
+
+		static SGTextureManager& instance();
+		void GenerateTexture(const SGTexture& textureObject, const bool& EnableMipMapLevels = false);
+		bool BindTexture(const char* map_name, const SG_UCHAR index);
+		void UnBindTexture();
+
 
         std::unordered_map<std::string,SG_UINT> _map_tBufferObjects;
     };

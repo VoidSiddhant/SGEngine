@@ -3,7 +3,7 @@
 
 namespace SGEngine
 {
-	SGTexture::SGTexture(const char* texturename,const char* filename)
+	SGTexture::SGTexture(const char* texturename,const char* filename , const bool& mipMap)
 	{
 		mapName = texturename;
 		textureFile = filename;
@@ -11,13 +11,17 @@ namespace SGEngine
 		configParams.magFilter = TextureFiltering::TF_LINEAR;
 		configParams.minFilter = TextureFiltering::TF_LINEAR;
 		configParams.wrapMode = TextureWrapMode::WRAP_REPEAT;
+
+		SGTextureManager::instance().GenerateTexture(*this, mipMap);
 	}
 
-	SGTexture::SGTexture(const char* texturename,const char* filename, const PConfig& config)
+	SGTexture::SGTexture(const char* texturename,const char* filename, const PConfig& config , const bool& mipMap)
 	{
 		mapName = texturename;
 		textureFile = filename;
 		configParams = config;
+
+		SGTextureManager::instance().GenerateTexture(*this, mipMap);
 	}
 
 	void SGTexture::SetParameters(const PConfig& config)

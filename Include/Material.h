@@ -3,10 +3,13 @@
 
 #include "SGUtil.h"
 #include "Shader.h"
+#include "ShaderManager.h"
 #include <External/GL/glew.h>
 
 namespace SGEngine
 {
+	class SGTexture;
+
 	class SGMaterial
 	{
 		friend class SGMeshRenderer;
@@ -33,6 +36,8 @@ namespace SGEngine
 		*****************************************************************************************************************/
 
 		void SetTexture(const char* name, const SG_UCHAR index);
+		void RemoveTexture(const char* name);
+		void RemoveTexture(const SG_UCHAR& index);
 		const char* GetTextureName( const SG_UCHAR& index) {
 			return _map_textures[index];
 		}

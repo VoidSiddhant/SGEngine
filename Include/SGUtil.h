@@ -11,6 +11,9 @@
 #include <unordered_map>
 #include <map>
 #include <memory>
+#include "External/glm/glm.hpp"
+#include "External/glm/gtc/matrix_transform.hpp"
+#include "External/glm/mat4x4.hpp"
 
 //Error Codes
 #define SG_UTIL_ERROR_CRITICAL 1
@@ -20,8 +23,8 @@
 #define SG_GLFW_VERSION_MINOR 3
 
 //Window Dimensions
-#define SG_UTIL_SCREEN_WIDTH 800
-#define SG_UTIL_SCREEN_HEIGHT 640
+#define SG_UTIL_SCREEN_WIDTH 800.0f
+#define SG_UTIL_SCREEN_HEIGHT 640.0f
 
 #define SG_UTIL_MATH_TORAD 3.14159265f / 180.0f
 

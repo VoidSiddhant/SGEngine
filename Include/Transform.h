@@ -5,21 +5,33 @@
 
 namespace SGEngine
 {
-    class SGTransform{
+	class SGCamera;
+
+	class SGTransform{
+		friend class SGGameObject;
+
         public :
 			SGTransform();
-			SGTransform(SGVector3 position, SGVector3 scale);
+			SGTransform(const SGVector3& position,const SGVector3& scale);
 
-			void SetRotation(const SGVector3 value);
-			void SetScale(const SGVector3 value);
-			void SetPosition(const SGVector3 value);
-			
+			void SetRotation(const SGVector3& value);
+			void SetScale(const SGVector3& value);
+			void SetPosition(const SGVector3& value);
+			void Translate(const SGVector3& value);
+			void Rotate(const SGVector3& value);
+			SGMat4 operator*(SGCamera& cam);
+
 			~SGTransform() {}
 
-        protected:
+	private:
+		void UpdateModel();
+
+        public:
         SGVector3 position,scale,rotation;
+
+	private:
+		glm::mat4 mat_model;
     };
 } // SGEngine
-
 
 #endif

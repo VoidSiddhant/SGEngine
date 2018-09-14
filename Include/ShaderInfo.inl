@@ -29,7 +29,7 @@ void Shader::AddVariable(const ShaderVariable<t_variable, t_type>& _variable, st
 	//Check for duplicates
 	std::vector<VariableInfo<t_variable, t_type>> &vinfo = getVector(_variable);
 
-	for (const VariableInfo<t_variable, t_type>& info : vinfo)
+ 	for (const VariableInfo<t_variable, t_type>& info : vinfo)
 	{
 		if (info._strName == variableName)
 		{

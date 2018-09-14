@@ -11,6 +11,7 @@ namespace SGEngine
     class SGGameObject
     {
 		public:
+			SGTransform transform;
 			std::string name;
 		//Methods
         public:
@@ -25,7 +26,7 @@ namespace SGEngine
 			return _map_component.at(component_id);
 		}
         private:
-			SGTransform* transform;
+
 			std::unordered_map<std::string, SGComponent*> _map_component;
     };
 }

@@ -35,7 +35,6 @@ namespace SGEngine
 				std::cout << "Create the Texture before binding : " << uuid << std::endl << it->second;
 			}
 		}
-
 	}
 
 	void SGMaterial::UnBindVAO() const
@@ -51,9 +50,11 @@ namespace SGEngine
 		for (Shader::ShaderAttributeInfo attribInfo : activeShader->vector_sai)
 		{
 			offsetBytes =  prevDataSize  * sizeof(float);
+			std::cout << "START OF FUNCTION : " <<__FUNCTION__ << std::endl;
 			std::cout << "**********************************************************************\n";
 			std::cout << attribInfo._strName <<" : "<<offsetBytes << " : " << sizeof(SGVertex) <<"\n";
 			std::cout << "**********************************************************************\n";
+			std::cout << "END OF FUNCTION : " << __FUNCTION__ << std::endl;
 			SGMaterialManager::instance().EnableAttribute(uuid,attribInfo._shaderVariable._variable
 				, sizeof(SGVertex), offsetBytes, false);
 			prevDataSize += attribInfo._dataSize;
@@ -64,7 +65,9 @@ namespace SGEngine
 	void SGMaterial::SetShader(SG_PTRS<Shader> const shader)
 	{
 		activeShader = shader;
+		std::cout << "START OF FUNCTION : " << __FUNCTION__ << std::endl;
 		std::cout << "Material name : " << name << " id : " << uuid << "Active Shader : "<<activeShader->shaderProgramName <<std::endl;
+		std::cout << "END OF FUNCTION : " << __FUNCTION__ << std::endl;
 		// Generate Shader data
 		SGMaterialManager::instance().Create(uuid, *activeShader);
 	}
@@ -72,6 +75,25 @@ namespace SGEngine
 	void SGMaterial::SetTexture(const char* name , const SG_UCHAR index)
 	{
 		_map_textures.insert(std::pair<SG_UCHAR, const char*>(index , name));
+	}
+
+	void SGMaterial::RemoveTexture(const char* name)
+	{
+		auto it = _map_textures.begin();
+		while (it != _map_textures.end())
+		{
+			if (it->second == name)
+			{
+				_map_textures.erase(it->first);
+				break;
+			}
+			it++;
+		}
+	}
+
+	void SGMaterial::RemoveTexture(const SG_UCHAR& index)
+	{
+		_map_textures.erase(index);
 	}
 
 	void SGMaterial::RenderBegin(const SG_UINT& vao)

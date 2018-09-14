@@ -9,7 +9,7 @@ uniform sampler2D sample_tex1;
 void main()
 {
 	if(useTex)
-		color = mix(texture(sample_tex0,vs_texCoord) , texture(sample_tex1 , vs_texCoord) , 0.8);
+		color = mix(texture(sample_tex0,vs_texCoord) , texture(sample_tex1 , vs_texCoord) , 0.5);
 	else
 		color = vs_color;
 }

@@ -7,8 +7,13 @@ class SGShapes
 {
   public:
     static SGShapes& instance();
-    void Triangle2D(const SGVector4& color, SGMeshFilter& outMesh);
+    /******************		2D-SHAPES	************************************************/
+	void Triangle2D(const SGVector4& color, SGMeshFilter& outMesh);
     void Quad2D(const SGVector4& color , SGMeshFilter& outMesh);
+	
+	/******************		3D-SHAPES	************************************************/
+	void Cube(const SGVector4& color, SGMeshFilter& outMesh);
+
   private:
     SGShapes(){}
     ~SGShapes(){}

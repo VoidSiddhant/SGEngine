@@ -4,6 +4,7 @@
 #include "SGUtil.h"
 #include "Shader.h"
 #include "Vector.h"
+#include "External/glm/gtc/type_ptr.hpp"
 
 namespace SGEngine
 {
@@ -92,7 +93,7 @@ private:
   template <typename T>
   void SetVertexAttribute(const long int& material_uuid, Shader_Semantic semantic, const T *const pParam, bool bEnable, SG_UINT strideBytes, SG_UINT offsetBytes, bool normalize) const;
   void SetVertexAttribute(AttributeVariable attrib, const void *const pVoid, bool bEnable, SG_UINT strideBytes, SG_UINT offsetBytes, bool normalize) const;
-  void SetUniform(const UniformVariable uniform,  glm::mat4 &matrix) const;
+  void SetUniform(const UniformVariable uniform,const glm::mat4 &matrix) const;
   void SetUniform(const UniformVariable uniform,const SGVector4 &value) const;
   void SetUniform(const UniformVariable uniform,const SGVector3 &value) const;
   void SetUniform(const UniformVariable uniform, const SGVector2 &value) const;

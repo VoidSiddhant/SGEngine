@@ -8,13 +8,14 @@ namespace SGEngine
 
 SGGameObject::SGGameObject()
 {
-	transform = new SGTransform();
 	name = "";
 }
 
 SGGameObject::SGGameObject(const SGVector3 &p, const SGVector3 &s,std::string go_name)
 {
-	transform = new SGTransform(p, s);
+	transform.position = p;
+	transform.scale = s;
+	transform.UpdateModel();
 	name = go_name;
 }
 
@@ -64,7 +65,5 @@ SGGameObject::~SGGameObject()
 		delete it->second;
 		it++;
 	}
-
-	delete transform;
 }
 } // namespace SGEngine

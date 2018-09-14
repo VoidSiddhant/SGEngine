@@ -65,7 +65,7 @@ namespace SGEngine
 			return type_ID("Component_MeshRenderer");
 		}
 
-		void Update() {}   // TRICKY
+		void Update() {}  
 		void Render();
 		void UpdateMaterial();
 		void SetMaterial(SG_PTRS<SGMaterial> const new_mat);

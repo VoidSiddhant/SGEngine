@@ -7,7 +7,19 @@
 
 namespace SGEngine
 {
-class SGVector2
+	using SGVector2 = glm::vec2;
+	using SGVector3 =  glm::vec3;
+	using SGVector4 = glm::vec4;
+
+	using SGMat2 = glm::mat2;
+	using SGMat3 = glm::mat3;
+	using SGMat4 = glm::mat4;
+
+	
+	/*****************************************************************************************
+	 ************************** Possible Unecesarry Stuff ************************************
+	 *****************************************************************************************/
+/*class SGVector2
 {
 public:
   SGVector2();
@@ -47,9 +59,10 @@ public:
   SG_INLINE void operator=(const SGVector3 &);
   SG_INLINE bool operator==(const SGVector3 &);
   SG_INLINE SGVector3& operator+(const SGVector3 &);
-  SG_INLINE void operator+=(const SGVector3 &);
+  SG_INLINE SGVector3& operator+=(const SGVector3 &);
   SG_INLINE SGVector3& operator-(const SGVector3 &);
-  SG_INLINE void operator-=(const SGVector3 &);
+  SG_INLINE SGVector3& operator-=(const SGVector3 &);
+  SG_INLINE SGVector3& operator*(const float&);
   SG_INLINE friend std::ostream &operator<<(std::ostream &o, const SGVector3 &v);
 
   ~SGVector3() {}
@@ -75,9 +88,10 @@ public:
   SG_INLINE void operator=(const SGVector4 &);
   SG_INLINE bool operator==(const SGVector4 &);
   SG_INLINE SGVector4& operator+(const SGVector4 &);
-  SG_INLINE void operator+=(const SGVector4 &);
+  SG_INLINE SGVector4& operator+=(const SGVector4 &);
   SG_INLINE SGVector4& operator-(const SGVector4 &);
-  SG_INLINE void operator-=(const SGVector4 &);
+  SG_INLINE SGVector4& operator-=(const SGVector4 &);
+  SG_INLINE SGVector4& operator*(const float&);
   SG_INLINE friend std::ostream &operator<<(std::ostream &o, const SGVector4 &v);
 
   ~SGVector4() {}
@@ -85,6 +99,7 @@ public:
 
 private:
 };
-#include "InlineVector.inl"
+#include "InlineVector.inl"*/
+
 } // namespace SGEngine
 #endif
