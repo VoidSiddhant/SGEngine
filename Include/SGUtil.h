@@ -29,6 +29,7 @@
 #define SG_UTIL_MATH_TORAD 3.14159265f / 180.0f
 
 #define SG_INT64 int64_t
+#define SG_UUID	long int
 #define SG_UINT unsigned int
 #define SG_UCHAR unsigned char
 #define SG_INLINE inline

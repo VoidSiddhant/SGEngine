@@ -9,7 +9,7 @@ namespace SGEngine
 
 	class SGTransform{
 		friend class SGGameObject;
-
+		friend class SGCamera;
         public :
 			SGTransform();
 			SGTransform(const SGVector3& position,const SGVector3& scale);
@@ -30,6 +30,7 @@ namespace SGEngine
         SGVector3 position,scale,rotation;
 
 	private:
+		SGVector3 rightAxis, upAxis, forwardAxis;
 		glm::mat4 mat_model;
     };
 } // SGEngine

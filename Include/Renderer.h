@@ -2,11 +2,11 @@
 #define _RENDERER_H
 
 #include "SGUtil.h"
-#include "Material.h"
 #include"Component.h"
 
 namespace SGEngine
 {
+	class SGMaterial;
 	class SGRenderer : public SGComponent
 	{
 	public:

@@ -34,7 +34,7 @@ namespace SGEngine
 	public:
 		SGTexture(const char* texturename,const char* filename, const PConfig& config ,const bool& mipMap = false);
 		SGTexture(const char* texturename , const char* filename , const bool& mipMap = false);
-		void SetParameters(const PConfig& config);   // NEED TO RE - GENERATE TEXTURES HERE!!!
+		void SetParameters(const PConfig& config);   // TODO :  RE - GENERATE TEXTURES HERE!!!
 		~SGTexture();
 
 	private:

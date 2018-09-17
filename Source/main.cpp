@@ -7,6 +7,7 @@
 #include "PrimitiveShapes.h"
 #include "GameObject.h"
 #include "TextureManager.h"
+#include "Material.h"
 #include "External/glm/gtc/type_ptr.hpp"
 
 using namespace SGEngine;
@@ -44,10 +45,8 @@ class Application : public SGCore
 		/******************************************************************************************************
 		******************	CAMERA SETUP	***********************************************************
 		*****************************************************************************************************/
-		camera = SG_MAKEPTRS<SGCamera>(SGVector3(0.0f, 0.0f,5.0f) , SGVector3(0.0f,0.0f,0.0f));
-		camera->UpdateProjection();
-		camera->UpdateView();
-
+		camera = SG_MAKEPTRS<SGCamera>(SGVector3(0.0f, 0.0f,-10.0f) , SGVector3(0.0f,0.0f,0.0f));		
+		
 		SGMeshFilter m, s;
 		/****************************************************************************************************************
 		******************************	SHADER SETUP ********************************************************************
@@ -66,8 +65,6 @@ class Application : public SGCore
 		texturedShader->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_COLOR, VT_FLOAT_VEC4), "color", 4);
 		texturedShader->AddVariable(ShaderAttribute(Shader_Semantic::SEMANTIC_TEXCOORD, VT_FLOAT_VEC2), "texCoord", 2);
 		texturedShader->AddVariable(ShaderUniform(Shader_Uniform::MATRIX_MVP, UT_FLOAT_MAT4), "WVP", 1);
-		//texturedShader->AddVariable(ShaderUniform(Shader_Uniform::Matrix_V, UT_FLOAT_MAT4), "view", 1);
-		//texturedShader->AddVariable(ShaderUniform(Shader_Uniform::Matrix_P, UT_FLOAT_MAT4), "proj", 1);
 		texturedShader->AddVariable(ShaderUniform(Shader_Uniform::SAMPLE_TEX0, UT_SAMPLER2D), "sample_tex0", 1);
 		texturedShader->AddVariable(ShaderUniform(Shader_Uniform::SAMPLE_TEX1, UT_SAMPLER2D), "sample_tex1" , 1);
 		texturedShader->AddVariable(ShaderUniform(Shader_Uniform::USE_TEX, UT_BOOL), "useTex" , 1);
@@ -107,7 +104,7 @@ class Application : public SGCore
 
     void Update(float dt)
     {
-
+		camera->UpdateView();
         float greenValue = (sin(SGTimer::instance().GetTotalTime()) / 2.0f) + 0.5f;
 		SGVector4 color{ 0.0f,greenValue,0.0f,1.0f };
 		mat2->SetUniform(Shader_Uniform::VEC4_COLOR, color);
@@ -116,10 +113,23 @@ class Application : public SGCore
 			triangle->transform.Rotate(SGVector3(0.0f, 10.0f * dt, 0.0f));
 		else if(Input::instance().GetKey(GLFW_KEY_A))
 			triangle->transform.Rotate(SGVector3(0.0f, -10.0f * dt, 0.0f));
-		
+
+		if (Input::instance().GetKey(GLFW_KEY_W))
+			triangle->transform.Translate(SGVector3(0.0f, 0.0f ,10.0f * dt));
+		else if (Input::instance().GetKey(GLFW_KEY_S))
+			triangle->transform.Translate(SGVector3(0.0f, 0.0f ,-10.0f * dt));
+
+		if (Input::instance().GetKey(GLFW_KEY_J))
+			camera->transform.Rotate(SGVector3(0.0f, 10.0f * dt, 0.0f));
+		else if (Input::instance().GetKey(GLFW_KEY_L))
+			camera->transform.Rotate(SGVector3(0.0f, -10.0f * dt, 0.0f));
+
+		if (Input::instance().GetKey(GLFW_KEY_I))
+			camera->transform.Translate(SGVector3(0.0f, 0.0f, 10.0f * dt));
+		else if (Input::instance().GetKey(GLFW_KEY_K))
+			camera->transform.Translate(SGVector3(0.0f, 0.0f, -10.0f * dt));
+
 		mat1->SetUniform(Shader_Uniform::MATRIX_MVP, *camera * triangle->transform);
-		//mat1->SetUniform(Shader_Uniform::Matrix_V, v);
-		//mat1->SetUniform(Shader_Uniform::Matrix_P, p);
 
 		if (Input::instance().GetKeyDown(GLFW_KEY_SPACE))
 		{

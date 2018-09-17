@@ -1,6 +1,4 @@
 #include "Material.h"
-#include "ShaderManager.h"
-#include "Mesh.h"
 #include "UUIDGenerator.h"
 #include "TextureManager.h"
 
@@ -11,6 +9,21 @@ namespace SGEngine
 		name = material_name;
 		SGUUIDGenerator::instance().Create(uuid);
 		activeShader = nullptr;
+	}
+
+	void SGMaterial::RegisterComponent(const SG_UUID& uuid, RCUpdateMethod method)
+	{
+		map_renderCompCallbacks.insert(MapRCUCallbacks::value_type(uuid,method));
+	}
+
+	void SGMaterial::UnRegisterComponent(const SG_UUID& uuid)
+	{
+		map_renderCompCallbacks.erase(uuid);
+	}
+
+	void SGMaterial::SetColor(const SGVector4& value)
+	{
+		color = value;
 	}
 
 	SGMaterial::~SGMaterial()
@@ -70,6 +83,11 @@ namespace SGEngine
 		std::cout << "END OF FUNCTION : " << __FUNCTION__ << std::endl;
 		// Generate Shader data
 		SGMaterialManager::instance().Create(uuid, *activeShader);
+		// Update all the RendererComponents using this material ( ReBuild- VAOs)
+		for (auto it = map_renderCompCallbacks.begin(); it != map_renderCompCallbacks.end(); it++)
+		{
+			//it->second;
+		}
 	}
 
 	void SGMaterial::SetTexture(const char* name , const SG_UCHAR index)

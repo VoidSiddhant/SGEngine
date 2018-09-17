@@ -43,6 +43,11 @@ void SGGameObject::AddComponent(SGComponent* component)
 	}
 }
 
+void SGGameObject::InternalUpdate()
+{
+	this->transform.UpdateModel();
+}
+
 void SGGameObject::Render()
 {
 	auto it = _map_component.begin();

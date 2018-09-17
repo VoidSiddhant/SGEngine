@@ -2,7 +2,7 @@
 #define _MATERIAL_H
 
 #include "SGUtil.h"
-#include "Shader.h"
+#include "Mesh.h"
 #include "ShaderManager.h"
 #include <External/GL/glew.h>
 
@@ -21,7 +21,10 @@ namespace SGEngine
 		/****************************************************************************************************************
 		******************************	SHADER HANDLERS *****************************************************************
 		*****************************************************************************************************************/
-
+		void SetColor(const SGVector4& color);
+		SGVector4 GetColor() const {
+			return color;
+		}
 		void SetShader(SG_PTRS<Shader>const shader);
 		std::string GetShaderName()  {
 			return activeShader->shaderProgramName;
@@ -50,7 +53,6 @@ namespace SGEngine
 			return uuid;
 		}
 
-
 	private:
 		SGMaterial() {}
 
@@ -68,8 +70,12 @@ namespace SGEngine
 		void BindTexture();
 
 		/****************************************************************************************************************
-		******************************	RENDER HANDLERS *****************************************************************
+		******************************	RENDER COMPONENT HANDLERS *****************************************************************
 		*****************************************************************************************************************/
+		using RCUpdateMethod =  void (SGRenderer::*) (void);
+		using MapRCUCallbacks = std::unordered_map<SG_UUID, RCUpdateMethod>;
+		void RegisterComponent(const SG_UUID& uuid, RCUpdateMethod method);
+		void UnRegisterComponent(const SG_UUID& uuid);
 
 		void RenderBegin(const SG_UINT& vao);
 		void RenderEnd();
@@ -77,11 +83,13 @@ namespace SGEngine
 		/****************************************************************************************************************
 		******************************	DATA ****************************************************************************
 		*****************************************************************************************************************/
-
+		
 		SG_PTRS<Shader> activeShader;
-		long int uuid;
+		SG_UUID uuid;
 		std::string name;
 		std::unordered_map<SG_UCHAR, const char*> _map_textures;
+		SGVector4 color;
+		MapRCUCallbacks map_renderCompCallbacks;
 	};
 
 #include "Material.inl"

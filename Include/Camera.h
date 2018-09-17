@@ -21,12 +21,12 @@ namespace SGEngine
 		glm::mat4 operator*(const glm::mat4& mat_model);
 		glm::mat4 operator*( SGTransform& trans);
 
+		//View Space Transforms
+		SGTransform transform;
+
 	private:
 		glm::mat4 mat_view;
 		glm::mat4 mat_projection;
-
-		//View Space Transforms
-		SGTransform transform;
 	};
 };
 #endif // !_CAMERA_H

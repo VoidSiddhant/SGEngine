@@ -1,5 +1,7 @@
 #include "Mesh.h"
-#include "ShaderManager.h"
+#include "Material.h"
+#include "UUIDGenerator.h"
+
 namespace SGEngine
 {
 	SGMeshFilter::SGMeshFilter()
@@ -42,7 +44,9 @@ namespace SGEngine
 
 	SGMeshRenderer::SGMeshRenderer(SGMeshFilter mesh_copy,SG_PTRS<SGMaterial> mat)
 	{
+		SGUUIDGenerator::instance().Create(uuid);
 		material = mat;
+		material->RegisterComponent(uuid,&SGRenderer::UpdateMaterial);
 
 		this->mesh = mesh_copy;
 		vao = vbo = ebo = 0;
@@ -50,6 +54,12 @@ namespace SGEngine
 
 		glGenBuffers(1, &vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		
+		for (auto it = mesh.vertex_list.begin(); it != mesh.vertex_list.end(); it++)
+		{
+			it->color = material->color;
+		}
+
 		glBufferData(GL_ARRAY_BUFFER, sizeof(SGVertex)*mesh.vertex_list.size(), &mesh.vertex_list[0], GL_STATIC_DRAW);
 		
 		// BUILD VAO OF THIS OBJECT USING THIS MATERIAL
@@ -88,5 +98,8 @@ namespace SGEngine
 		glDeleteBuffers(1, &vbo);
 		glDeleteBuffers(1, &ebo);
 		vao = vbo = ebo = 0;
+		
+		material->UnRegisterComponent(uuid);
+		uuid = 0;
 	}
 }

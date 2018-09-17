@@ -3,7 +3,6 @@
 
 #include "Renderer.h"
 #include "Vector.h"
-#include "Material.h"
 #include "External/GL/glew.h"
 
 namespace SGEngine
@@ -67,13 +66,14 @@ namespace SGEngine
 
 		void Update() {}  
 		void Render();
-		void UpdateMaterial();
+		void UpdateMaterial(void);
 		void SetMaterial(SG_PTRS<SGMaterial> const new_mat);
 		SG_PTRS<SGMaterial> GetMaterial() const {
 			return material;
 		}
 
 	private:
+		SG_UUID uuid;
 		SGMeshFilter mesh;
 		SG_UINT vbo, ebo,vao;
 	};
