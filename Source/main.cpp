@@ -135,7 +135,6 @@ class Application : public SGCore
 		{
 			SGMeshRenderer* r = static_cast<SGMeshRenderer*>(triangle->GetComponent("Component_MeshRenderer"));
 			r->GetMaterial()->SetShader(simpleShader);
-			r->UpdateMaterial();
 		}
     }
 

@@ -34,6 +34,7 @@ void SGGameObject::AddComponent(SGComponent* component)
 #endif // _DEBUG
 
 		_map_component.insert(std::pair<std::string,SGComponent*>(name, component));
+		component->SetOwnerGO(this);
 	}
 	else
 	{

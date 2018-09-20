@@ -11,19 +11,26 @@ namespace SGEngine
 		activeShader = nullptr;
 	}
 
-	void SGMaterial::RegisterComponent(const SG_UUID& uuid, RCUpdateMethod method)
+	void SGMaterial::RegisterComponent(const SG_UUID& object_uuid, RCUpdateMethod method)
 	{
-		map_renderCompCallbacks.insert(MapRCUCallbacks::value_type(uuid,method));
+		map_renderCompCallbacks.insert(MapRCUCallbacks::value_type(object_uuid,method));
 	}
 
-	void SGMaterial::UnRegisterComponent(const SG_UUID& uuid)
+	void SGMaterial::UnRegisterComponent(const SG_UUID& object_uuid)
 	{
-		map_renderCompCallbacks.erase(uuid);
+		for (auto it = map_renderCompCallbacks.begin(); it != map_renderCompCallbacks.end(); it++)
+		{
+			if (it->first == object_uuid)
+			{
+				map_renderCompCallbacks.erase(it->first);
+			}
+		}
 	}
 
 	void SGMaterial::SetColor(const SGVector4& value)
 	{
 		color = value;
+
 	}
 
 	SGMaterial::~SGMaterial()
@@ -86,7 +93,7 @@ namespace SGEngine
 		// Update all the RendererComponents using this material ( ReBuild- VAOs)
 		for (auto it = map_renderCompCallbacks.begin(); it != map_renderCompCallbacks.end(); it++)
 		{
-			//it->second;
+			it->second(SG_EUpdateFlag::MaterialUpdate);
 		}
 	}
 

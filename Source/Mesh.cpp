@@ -28,25 +28,36 @@ namespace SGEngine
 	void SGMeshRenderer::SetMaterial(SG_PTRS<SGMaterial> const new_mat)
 	{
 		material = new_mat;
-		this->UpdateMaterial();
+		this->UpdateMaterial(SG_EUpdateFlag::MaterialUpdate);
 	}
 
-	void SGMeshRenderer::UpdateMaterial()
+	void SGMeshRenderer::UpdateMaterial(const SG_EUpdateFlag& flag)
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		switch (flag)
+		{
+		case SG_EUpdateFlag::MaterialUpdate:
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-		material->BuildVAO(vao);
+			material->BuildVAO(vao);
 
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			break;
+
+		case SG_EUpdateFlag::ColorUpdate:
+
+			break;
+		}
 	}
 
 	SGMeshRenderer::SGMeshRenderer(SGMeshFilter mesh_copy,SG_PTRS<SGMaterial> mat)
 	{
+		using namespace std::placeholders;
 		SGUUIDGenerator::instance().Create(uuid);
 		material = mat;
-		material->RegisterComponent(uuid,&SGRenderer::UpdateMaterial);
+		auto rc = std::bind(&SGRenderer::UpdateMaterial, this,_1);
+		material->RegisterComponent(uuid,rc);
 
 		this->mesh = mesh_copy;
 		vao = vbo = ebo = 0;

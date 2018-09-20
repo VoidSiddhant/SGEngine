@@ -72,7 +72,7 @@ namespace SGEngine
 		/****************************************************************************************************************
 		******************************	RENDER COMPONENT HANDLERS *****************************************************************
 		*****************************************************************************************************************/
-		using RCUpdateMethod =  void (SGRenderer::*) (void);
+		using RCUpdateMethod =  std::function<void (const SG_EUpdateFlag&)>;
 		using MapRCUCallbacks = std::unordered_map<SG_UUID, RCUpdateMethod>;
 		void RegisterComponent(const SG_UUID& uuid, RCUpdateMethod method);
 		void UnRegisterComponent(const SG_UUID& uuid);

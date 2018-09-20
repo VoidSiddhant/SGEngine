@@ -6,6 +6,7 @@
 
 namespace SGEngine
 {
+	enum class SG_EUpdateFlag : char;
 	class SGMaterial;
 	class SGRenderer : public SGComponent
 	{
@@ -15,7 +16,7 @@ namespace SGEngine
 			return std::string("Component_Render");
 		}
 
-		 virtual void UpdateMaterial() = 0;
+		 virtual void UpdateMaterial(const SG_EUpdateFlag& flag) = 0;
 		 virtual void SetMaterial(SG_PTRS<SGMaterial> const new_mat) = 0;
 		 virtual SG_PTRS<SGMaterial> GetMaterial() const = 0;
 

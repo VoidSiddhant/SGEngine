@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <map>
 #include <memory>
+#include <functional>
 #include "External/glm/glm.hpp"
 #include "External/glm/gtc/matrix_transform.hpp"
 #include "External/glm/mat4x4.hpp"

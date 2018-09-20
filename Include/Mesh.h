@@ -7,6 +7,13 @@
 
 namespace SGEngine
 {
+	enum class SG_EUpdateFlag : char
+	{
+		MaterialUpdate,
+		ColorUpdate,
+		MeshUpdate
+	};
+
 	struct SGVertex {
 		SGVector3 position;
 		SGVector4 color;
@@ -66,7 +73,7 @@ namespace SGEngine
 
 		void Update() {}  
 		void Render();
-		void UpdateMaterial(void);
+		void UpdateMaterial(const SG_EUpdateFlag& flag);
 		void SetMaterial(SG_PTRS<SGMaterial> const new_mat);
 		SG_PTRS<SGMaterial> GetMaterial() const {
 			return material;
