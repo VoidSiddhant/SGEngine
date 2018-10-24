@@ -10,6 +10,9 @@
 #include "Material.h"
 #include "External/glm/gtc/type_ptr.hpp"
 
+// Application Side
+#include "Player.h"
+
 using namespace SGEngine;
 // Forward declaration
 enum class SGEngine::Shader_Semantic : SG_UINT
@@ -46,7 +49,7 @@ class Application : public SGCore
 		******************	CAMERA SETUP	***********************************************************
 		*****************************************************************************************************/
 		camera = SG_MAKEPTRS<SGCamera>(SGVector3(0.0f, 0.0f,-10.0f) , SGVector3(0.0f,0.0f,0.0f));		
-		
+
 		SGMeshFilter m, s;
 		/****************************************************************************************************************
 		******************************	SHADER SETUP ********************************************************************
@@ -71,13 +74,12 @@ class Application : public SGCore
 		/****************************************************************************************************************
 		******************************	Material SETUP ********************************************************************
 		*****************************************************************************************************************/
-		SGTexture wood_text("WoodTexture","./Textures/container.jpg");
+		SGTexture wood_text("WoodTexture","./Textures/left.jpg");
 		SGTexture cont_text("ContainerTexture", "./Textures/crate.jpg");
-		
 		mat1 = SG_MAKEPTRS<SGMaterial>("Material1");
 		mat1->SetShader(texturedShader);
-		mat1->SetTexture("WoodTexture", 0);
-		mat1->SetTexture("ContainerTexture", 1);
+		//mat1->SetTexture("WoodTexture", 0);
+		//mat1->SetTexture("ContainerTexture", 1);
 		//*************			Texture Blending			      ********
 		mat1->SetUniform(Shader_Uniform::SAMPLE_TEX0, 0);       //********
 		mat1->SetUniform(Shader_Uniform::SAMPLE_TEX1, 1);		//********
@@ -92,14 +94,8 @@ class Application : public SGCore
 
 		//Triangle GameObject
 		SGShapes::instance().Cube(SGVector4(1.0f, 1.0f, 1.0f, 1.0f), m);
-		triangle = new SGGameObject(SGVector3(0.0f, 0.0f, 0.0f), SGVector3(1.0f, 1.0f, 1.0f), "Triangle");
 		SGComponent* triangleRender = new SGMeshRenderer(m,mat1);
-		triangle->AddComponent(triangleRender);
-		//Square GameObject
-		square = new SGGameObject(SGVector3(0.0f, 0.0f, 0.0f), SGVector3(0.0f, 0.0f, 0.0f), "Square");
-		SGShapes::instance().Quad2D(SGVector4(1.0f, 1.0f, 1.0f, 1.0f), s);
-		SGComponent* squareRender = new SGMeshRenderer(s,mat2);
-		square->AddComponent(squareRender);
+		player.AddComponent(triangleRender);
 	}
 
     void Update(float dt)
@@ -109,16 +105,7 @@ class Application : public SGCore
 		SGVector4 color{ 0.0f,greenValue,0.0f,1.0f };
 		mat2->SetUniform(Shader_Uniform::VEC4_COLOR, color);
 		
-		if(Input::instance().GetKey(GLFW_KEY_D))
-			triangle->transform.Rotate(SGVector3(0.0f, 10.0f * dt, 0.0f));
-		else if(Input::instance().GetKey(GLFW_KEY_A))
-			triangle->transform.Rotate(SGVector3(0.0f, -10.0f * dt, 0.0f));
-
-		if (Input::instance().GetKey(GLFW_KEY_W))
-			triangle->transform.Translate(SGVector3(0.0f, 0.0f ,10.0f * dt));
-		else if (Input::instance().GetKey(GLFW_KEY_S))
-			triangle->transform.Translate(SGVector3(0.0f, 0.0f ,-10.0f * dt));
-
+	
 		if (Input::instance().GetKey(GLFW_KEY_J))
 			camera->transform.Rotate(SGVector3(0.0f, 10.0f * dt, 0.0f));
 		else if (Input::instance().GetKey(GLFW_KEY_L))
@@ -129,13 +116,10 @@ class Application : public SGCore
 		else if (Input::instance().GetKey(GLFW_KEY_K))
 			camera->transform.Translate(SGVector3(0.0f, 0.0f, -10.0f * dt));
 
-		mat1->SetUniform(Shader_Uniform::MATRIX_MVP, *camera * triangle->transform);
+		mat1->SetUniform(Shader_Uniform::MATRIX_MVP, *camera * player.transform);
 
-		if (Input::instance().GetKeyDown(GLFW_KEY_SPACE))
-		{
-			SGMeshRenderer* r = static_cast<SGMeshRenderer*>(triangle->GetComponent("Component_MeshRenderer"));
-			r->GetMaterial()->SetShader(simpleShader);
-		}
+		player.Update(dt);
+
     }
 
     void Render()
@@ -144,17 +128,14 @@ class Application : public SGCore
 		glEnable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		//SQUARE
-		//square->Render();
-		//TRIANGLE
-        triangle->Render();
-        
+		player.Render();
+
 		glfwSwapBuffers(mainWindow);
     }
 
     void ApplicationDispose()
     {
-        delete triangle, simpleShader,square;
+		simpleShader.reset();
     }
 
     ~Application()
@@ -166,7 +147,7 @@ class Application : public SGCore
 	SG_PTRS<SGCamera> camera;
 	SG_PTRS<SGMaterial> mat1;
 	SG_PTRS<SGMaterial> mat2;
-    SGGameObject *triangle, *square;
+    Player player;
 	float rotSpeed = 8.0f;
     Application()
     {

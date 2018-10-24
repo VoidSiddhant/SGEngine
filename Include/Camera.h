@@ -2,6 +2,7 @@
 #define _CAMERA_H
 
 #include "SGUtil.h"
+#include "Core.h"
 #include "Transform.h"
 #include "Vector.h"
 
@@ -16,6 +17,7 @@ namespace SGEngine
 		~SGCamera();
 
 		void UpdateView();
+		void CreateStereo(GLFWwindow* window, float IOD, float depthZ, bool left_eye);
 		void UpdateProjection();
 
 		glm::mat4 operator*(const glm::mat4& mat_model);

@@ -14,8 +14,9 @@ out vec2 vs_texCoord;
 void main()
 {
 //	matrix * vector -> slow   vector * matrix -> fast
-    gl_Position = WVP * vec4(lPos.x,lPos.y,lPos.z,1.0f);
-	gl_PointSize = gl_Position.z;
+	
+	gl_Position = WVP * vec4(lPos.x,lPos.y,lPos.z,1.0f);
     vs_color = color;
 	vs_texCoord = texCoord;
 }
+

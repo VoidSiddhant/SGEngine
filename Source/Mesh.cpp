@@ -72,7 +72,6 @@ namespace SGEngine
 		}
 
 		glBufferData(GL_ARRAY_BUFFER, sizeof(SGVertex)*mesh.vertex_list.size(), &mesh.vertex_list[0], GL_STATIC_DRAW);
-		
 		// BUILD VAO OF THIS OBJECT USING THIS MATERIAL
 		material->BuildVAO(vao);
 

@@ -19,7 +19,9 @@ namespace SGEngine
 		WRAP_CLAMP_EDGE = GL_CLAMP_TO_EDGE,
 		WRAP_CLAMP_BORDER = GL_CLAMP_TO_BORDER
 	};
-
+	/* SGTexture:
+		* Texture Object
+		* Handles all the texture properties supported by the engine*/
 	class SGTexture
 	{
 		friend class SGTextureManager;
@@ -43,6 +45,9 @@ namespace SGEngine
 		PConfig configParams;
 	};
 
+	/*Texture Manager :
+		* Loads (GL_Calls) and stores all the textures in memory.
+		* Handles Binding of the textures for the current draw call*/
     class SGTextureManager
     {
 		friend class SGTexture;
@@ -56,7 +61,6 @@ namespace SGEngine
 		void GenerateTexture(const SGTexture& textureObject, const bool& EnableMipMapLevels = false);
 		bool BindTexture(const char* map_name, const SG_UCHAR index);
 		void UnBindTexture();
-
 
         std::unordered_map<std::string,SG_UINT> _map_tBufferObjects;
     };

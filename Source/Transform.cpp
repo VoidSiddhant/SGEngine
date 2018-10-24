@@ -41,7 +41,9 @@ namespace SGEngine
 	void SGTransform::SetRotation(const SGVector3& value)
 	{
 		this->rotation = value;
-		this->UpdateModel();
+		mat_model = glm::rotate(mat_model, glm::radians(value.x), SGVector3(1.0f, 0.0f, 0.0f));
+		mat_model = glm::rotate(mat_model, glm::radians(value.y), SGVector3(0.0f, 1.0f, 0.0f));
+		mat_model = glm::rotate(mat_model, glm::radians(value.z), SGVector3(0.0f, 0.0f, 1.0f));
 	}
 
 	void SGTransform::Rotate(const SGVector3& value)

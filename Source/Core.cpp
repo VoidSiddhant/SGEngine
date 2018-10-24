@@ -44,6 +44,7 @@ namespace SGEngine
 
         //Get Frame Buffer size Information
         int bufferWidth, bufferHeight;
+	
         glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
 
         //Set the window the Context will be used on
@@ -61,8 +62,8 @@ namespace SGEngine
             return SG_UTIL_ERROR_CRITICAL;
         }
         glfwSetKeyCallback(mainWindow, ProcessInput);
-        //Set up Viewport Size
-        glViewport(0, 0, bufferWidth, bufferHeight);
+
+		glViewport(0, 0, bufferWidth, bufferHeight);
         return 0;
     }
 

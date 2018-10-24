@@ -24,6 +24,8 @@ namespace SGEngine
 		std::vector<SGVertex> vertex_list;
 		std::vector<SG_UINT> index_list;
 
+		std::vector<SGVector3> position;
+
 		explicit SGMeshFilter();
 		SGMeshFilter(SGMeshFilter& copyMesh);
 

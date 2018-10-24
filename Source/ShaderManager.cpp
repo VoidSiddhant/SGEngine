@@ -319,8 +319,7 @@ SGMaterialManager::~SGMaterialManager()
             for (SG_UINT uShaderType = 0; uShaderType < it->second->_aShaderIndex.size(); uShaderType++)
             {
                 glDetachShader(it->second->_uId, _avShaderBlob[uShaderType].at(
-                                                                               it->second->_aShaderIndex[uShaderType])
-                                                     ->uId);
+                                                                               it->second->_aShaderIndex[uShaderType])->uId);
             }
 
             glDeleteProgram(it->second->_uId);

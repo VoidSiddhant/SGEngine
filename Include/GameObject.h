@@ -19,9 +19,8 @@ namespace SGEngine
         SGGameObject(const SGVector3& position , const SGVector3& scale,std::string GameObjectName);
         ~SGGameObject();
 
-		void InternalUpdate();
 		void Render();
-		//virtual void Update() = 0 {};
+		virtual void Update(float dt) {};
 
 		void AddComponent(SGComponent* component);
 		SGComponent* GetComponent(std::string component_id) const {

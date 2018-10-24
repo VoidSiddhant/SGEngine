@@ -7,6 +7,7 @@ namespace SGEngine
 	SGMaterial::SGMaterial(std::string material_name)
 	{
 		name = material_name;
+		color = SGVector4(1.0f, 1.0f, 1.0f, 1.0f);
 		SGUUIDGenerator::instance().Create(uuid);
 		activeShader = nullptr;
 	}
@@ -131,6 +132,6 @@ namespace SGEngine
 	void SGMaterial::RenderEnd()
 	{
 		this->UnBindVAO();
-		this->BindTexture();
+		//this->BindTexture(); // Unbind Texture here
 	}
 }
